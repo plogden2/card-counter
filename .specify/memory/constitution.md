@@ -1,23 +1,14 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 2.0.0
+- Version change: 2.0.0 → 3.0.0 (Godot cross-platform rewrite)
 - Modified principles:
-  - Spec-First Development → Spec-First Development (retained, wording aligned to game context)
-  - Smooth, Geospatially Faithful Animation → Comprehensive Test-Driven Development (new)
-  - Incremental, Story-Scoped Delivery → Incremental, Story-Scoped Delivery (retained)
-  - Simplicity & Minimal Dependencies → Phaser-First Game Architecture (redefined)
-  - Accessible, Browser-First Experience → Educational Clarity & Accessible Web (expanded)
-- Added sections: Technical Constraints (Phaser, TDD stack), Quality Standards & Non-Goals
-- Removed sections: Route-animation geospatial constraints, GIS non-goals
-- Templates:
-  - .specify/templates/plan-template.md ✅ updated (Constitution Check gates for TDD + Phaser)
-  - .specify/templates/spec-template.md ✅ updated (card-counting examples, mandatory test mapping)
-  - .specify/templates/tasks-template.md ✅ updated (TDD-first mandatory test phases)
-  - .specify/templates/commands/*.md ⚠ pending (directory not present)
-  - README.md ✅ updated (project description + governance link)
-  - .cursor/rules/specify-rules.mdc ✅ updated (feature plan reference)
-  - .specify/feature.json ✅ updated (001-card-counter-tutorial)
-- Deferred TODOs: none
+  - Phaser-First Game Architecture → Godot-First Game Architecture (redefined)
+  - Educational Clarity & Accessible Web → Educational Clarity & Accessible Multi-Platform (expanded)
+- Modified sections: Technical Constraints (Godot 4.4+, GUT, export smoke; Playwright replaced)
+- Retained principles: Spec-First Development, Comprehensive Test-Driven Development,
+  Incremental Story-Scoped Delivery, Quality Standards & Non-Goals
+- Templates: pending sync in subsequent tasks (plan-template, spec-template, tasks-template)
+- Deferred TODOs: template and dependent artifact sync
 -->
 
 # Card Counter Constitution
@@ -61,41 +52,39 @@ cycle complete before the next story starts.
 **Rationale**: Tutorial games grow scene-by-scene; independent stories enable early
 playtesting and isolated test suites per learning objective.
 
-### Phaser-First Game Architecture
+### Godot-First Game Architecture
 
-The game MUST use Phaser as the primary rendering and scene-management engine. Domain
+The game MUST use Godot 4 as the primary rendering and scene-management engine. Domain
 logic (deck state, hand valuation, counting systems, tutorial progression) MUST live
-outside Phaser scenes in plain modules so unit and integration tests do not require
-a running canvas. Scenes MUST orchestrate presentation and input, not embed untested
-business rules.
+in plain GDScript modules under `godot/scripts/domain/` with zero `Node` imports so
+GUT unit tests do not require a running scene. Scenes MUST orchestrate presentation
+and input, not embed untested business rules.
 
-**Rationale**: Phaser excels at 2D game UX; separating logic keeps TDD practical and
-avoids brittle scene-only tests.
+**Rationale**: Godot supports 2D UI + 3D table in one project; separating logic keeps
+TDD practical and avoids brittle scene-only tests.
 
-### Educational Clarity & Accessible Web
+### Educational Clarity & Accessible Multi-Platform
 
-Primary delivery MUST target modern browsers. Tutorial copy MUST teach counting
-concepts clearly and MUST NOT facilitate real-money gambling. Interactive controls
-MUST be keyboard-operable. Motion and effects MUST respect `prefers-reduced-motion`
-with usable non-animated fallbacks where motion is decorative.
+The game MUST ship free as an educational tutorial on Steam, Web, and iOS. Tutorial
+copy MUST teach counting concepts clearly and MUST NOT facilitate real-money gambling.
+Desktop builds MUST support keyboard-operable controls. iOS builds MUST support touch
+targets ≥ 44 pt. Motion and effects MUST respect reduced-motion preference with
+usable non-animated fallbacks where motion is decorative.
 
 **Rationale**: The product is a learning tool; clarity and accessibility are core
-quality, not optional polish.
+quality across all export targets.
 
 ## Technical Constraints
 
-- **Engine**: Phaser (version pinned in each feature plan Technical Context).
-- **Language**: TypeScript for application and test code unless a plan documents an
-  exception.
-- **Test stack**: Unit and functional tests (e.g., Vitest), integration tests for
-  module boundaries and scene wiring, Playwright for end-to-end browser flows. All
-  four MUST appear in `plan.md` and `tasks.md` for every story.
-- **Game state**: Deck, shoe, hands, bets (if simulated), and count state MUST be
-  modeled explicitly; randomness MUST be seedable in tests.
-- **Performance budget**: Define frame-time and load targets in `plan.md` Technical
-  Context; tutorial scenes MUST remain responsive on reference hardware.
-- **Persistence / backend**: Not assumed unless specified in the feature spec; prefer
-  client-only tutorial flows.
+- **Engine**: Godot 4.4+ (version pinned in each feature plan Technical Context).
+- **Language**: GDScript for application and test code unless a plan documents an exception.
+- **Test stack**: GUT for unit, functional, and integration tests; export smoke via
+  headless CLI. Playwright is replaced by scene integration + export smoke for the
+  Godot rewrite.
+- **Game state**: Deck, shoe, hands, bets, and count state MUST be modeled explicitly;
+  randomness MUST be seedable in tests.
+- **Performance budget**: 60 fps on 3D table scene; initial Steam load < 5 s on SSD.
+- **Persistence**: `user://card-counter/` JSON files per `persistence-schema.json` v1.
 
 ## Quality Standards & Non-Goals
 
@@ -132,4 +121,4 @@ Phase 0 research and MUST re-check after Phase 1 design. `/speckit-analyze` trea
 constitution conflicts as CRITICAL. `/speckit-tasks` MUST order test tasks before
 implementation tasks per the TDD principle.
 
-**Version**: 2.0.0 | **Ratified**: 2026-06-04 | **Last Amended**: 2026-06-06
+**Version**: 3.0.0 | **Ratified**: 2026-06-04 | **Last Amended**: 2026-06-06
