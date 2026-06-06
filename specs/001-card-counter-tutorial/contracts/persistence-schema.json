@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "card-counter/learner-profile/v1",
+  "title": "LearnerProfile",
+  "type": "object",
+  "required": ["schemaVersion", "balance", "selectedBetModel", "soundEnabled"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "balance": { "type": "number", "minimum": 0, "default": 1000 },
+    "selectedBetModel": {
+      "type": "string",
+      "enum": ["spread-table", "flat-ramp", "wonging"],
+      "default": "spread-table"
+    },
+    "lastMode": { "type": "string", "enum": ["tutorial", "free-play"] },
+    "soundEnabled": { "type": "boolean", "default": true },
+    "motionReduced": { "type": "boolean", "default": false },
+    "lastSessionAt": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}
