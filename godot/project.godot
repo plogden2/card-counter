@@ -1,0 +1,17 @@
+; Engine configuration file.
+config_version=5
+
+[application]
+config/name="Card Counter"
+run/main_scene="res://scenes/boot.tscn"
+config/features=PackedStringArray("4.4", "Forward Plus")
+
+[autoload]
+GameController="*res://scripts/game/game_controller.gd"
+SceneRouter="*res://scripts/game/scene_router.gd"
+
+[rendering]
+renderer/rendering_method="forward_plus"
+
+[debug]
+gdscript/warnings/untyped_declaration=1
