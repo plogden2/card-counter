@@ -24,13 +24,13 @@ description: "Task list for Blackjack Card Counting Tutorial Game"
 
 **Purpose**: Initialize Vite + TypeScript + Phaser project and repository structure
 
-- [ ] T001 Create directory structure per plan.md in `src/`, `tests/`, `public/assets/`
-- [ ] T002 Initialize `package.json` with Vite 6, TypeScript 5.7, Phaser 3.80, Chart.js, Howler in project root
-- [ ] T003 [P] Configure `tsconfig.json` and `vite.config.ts` with path aliases for `src/`
-- [ ] T004 [P] Configure Vitest in `vitest.config.ts` for `tests/unit` and `tests/functional`
-- [ ] T005 [P] Configure Playwright in `playwright.config.ts` for `tests/e2e/`
-- [ ] T006 [P] Add npm scripts in `package.json` per `quickstart.md` (`dev`, `build`, `test`, `test:integration`, `test:e2e`, `test:all`)
-- [ ] T007 [P] Create `index.html` and `src/game/main.ts` Phaser bootstrap stub
+- [X] T001 Create directory structure per plan.md in `src/`, `tests/`, `public/assets/`
+- [X] T002 Initialize `package.json` with Vite 6, TypeScript 5.7, Phaser 3.80, Chart.js, Howler in project root
+- [X] T003 [P] Configure `tsconfig.json` and `vite.config.ts` with path aliases for `src/`
+- [X] T004 [P] Configure Vitest in `vitest.config.ts` for `tests/unit` and `tests/functional`
+- [X] T005 [P] Configure Playwright in `playwright.config.ts` for `tests/e2e/`
+- [X] T006 [P] Add npm scripts in `package.json` per `quickstart.md` (`dev`, `build`, `test`, `test:integration`, `test:e2e`, `test:all`)
+- [X] T007 [P] Create `index.html` and `src/game/main.ts` Phaser bootstrap stub
 
 ---
 
@@ -42,21 +42,21 @@ description: "Task list for Blackjack Card Counting Tutorial Game"
 
 ### Tests for Foundation (write first) 🔴
 
-- [ ] T008 [P] Unit tests for seedable RNG in `tests/unit/rng.test.ts`
-- [ ] T009 [P] Unit tests for Card rank/suit and Hi-Lo tag in `tests/unit/card.test.ts`
-- [ ] T010 [P] Unit tests for event bus types in `tests/unit/events.test.ts`
+- [X] T008 [P] Unit tests for seedable RNG in `tests/unit/rng.test.ts`
+- [X] T009 [P] Unit tests for Card rank/suit and Hi-Lo tag in `tests/unit/card.test.ts`
+- [X] T010 [P] Unit tests for event bus types in `tests/unit/events.test.ts`
 
 ### Implementation for Foundation 🟢
 
-- [ ] T011 [P] Implement seedable RNG in `src/lib/rng.ts`
-- [ ] T012 [P] Implement typed event bus in `src/lib/events.ts`
-- [ ] T013 [P] Implement Card type and helpers in `src/domain/card.ts`
-- [ ] T014 [P] Implement Deck builder in `src/domain/deck.ts`
-- [ ] T015 Implement Hand valuation in `src/domain/hand.ts`
-- [ ] T016 [P] Implement Phaser config in `src/game/config.ts`
-- [ ] T017 Implement BootScene stub in `src/game/scenes/BootScene.ts`
-- [ ] T018 [P] Create GameController skeleton in `src/game/controllers/GameController.ts`
-- [ ] T019 [P] Integration harness for GameController boot in `tests/integration/scene-harness.test.ts`
+- [X] T011 [P] Implement seedable RNG in `src/lib/rng.ts`
+- [X] T012 [P] Implement typed event bus in `src/lib/events.ts`
+- [X] T013 [P] Implement Card type and helpers in `src/domain/card.ts`
+- [X] T014 [P] Implement Deck builder in `src/domain/deck.ts`
+- [X] T015 Implement Hand valuation in `src/domain/hand.ts`
+- [X] T016 [P] Implement Phaser config in `src/game/config.ts`
+- [X] T017 Implement BootScene stub in `src/game/scenes/BootScene.ts`
+- [X] T018 [P] Create GameController skeleton in `src/game/controllers/GameController.ts`
+- [X] T019 [P] Integration harness for GameController boot in `tests/integration/scene-harness.test.ts`
 
 **Checkpoint**: Foundation tests green; domain primitives and controller skeleton ready
 
@@ -70,26 +70,26 @@ description: "Task list for Blackjack Card Counting Tutorial Game"
 
 ### Tests for User Story 0 (write first) 🔴
 
-- [ ] T020 [P] [US0] Unit tests for mode routing and no-gating rules in `tests/unit/mode-routing.test.ts`
-- [ ] T021 [P] [US0] Functional tests for Tutorial vs Free Play entry states in `tests/functional/launch-modes.test.ts`
-- [ ] T022 [P] [US0] Integration tests for home → mode → home → alternate mode in `tests/integration/mode-switch.test.ts`
-- [ ] T023 [P] [US0] Playwright E2E for mode selection in `tests/e2e/launch-modes.spec.ts`
-- [ ] T024 [P] [US0] Unit tests for five tutorial lesson definitions and progression in `tests/unit/tutorial.test.ts`
-- [ ] T025 [P] [US0] Playwright E2E for guided Tutorial L1 lesson flow in `tests/e2e/tutorial-lesson.spec.ts`
+- [X] T020 [P] [US0] Unit tests for mode routing and no-gating rules in `tests/unit/mode-routing.test.ts`
+- [X] T021 [P] [US0] Functional tests for Tutorial vs Free Play entry states in `tests/functional/launch-modes.test.ts`
+- [X] T022 [P] [US0] Integration tests for home → mode → home → alternate mode in `tests/integration/mode-switch.test.ts`
+- [X] T023 [P] [US0] Playwright E2E for mode selection in `tests/e2e/launch-modes.spec.ts`
+- [X] T024 [P] [US0] Unit tests for five tutorial lesson definitions and progression in `tests/unit/tutorial.test.ts`
+- [X] T025 [P] [US0] Playwright E2E for guided Tutorial L1 lesson flow in `tests/e2e/tutorial-lesson.spec.ts`
 
 ### Implementation for User Story 0 🟢
 
-- [ ] T026 [P] [US0] Implement GameMode types and router in `src/domain/mode-routing.ts`
-- [ ] T027 [US0] Implement HomeScene with Tutorial and Free Play buttons in `src/game/scenes/HomeScene.ts`
-- [ ] T028 [P] [US0] Define `LearnerProfile` types and `lastMode` read/write stubs only in `src/persistence/learner-profile.ts` (balance persistence deferred to US3)
-- [ ] T029 [US0] Connect HomeScene navigation to TutorialScene and SetupScene in `src/game/controllers/GameController.ts`
-- [ ] T030 [P] [US0] Implement five tutorial lesson definitions in `src/tutorial/lessons.ts`
-- [ ] T031 [US0] Implement tutorial progression wiring in `src/domain/tutorial.ts`
-- [ ] T032 [US0] Implement TutorialScene guided lesson flow in `src/game/scenes/TutorialScene.ts`
+- [X] T026 [P] [US0] Implement GameMode types and router in `src/domain/mode-routing.ts`
+- [X] T027 [US0] Implement HomeScene with Tutorial and Free Play buttons in `src/game/scenes/HomeScene.ts`
+- [X] T028 [P] [US0] Define `LearnerProfile` types and `lastMode` read/write stubs only in `src/persistence/learner-profile.ts` (balance persistence deferred to US3)
+- [X] T029 [US0] Connect HomeScene navigation to TutorialScene and SetupScene in `src/game/controllers/GameController.ts`
+- [X] T030 [P] [US0] Implement five tutorial lesson definitions in `src/tutorial/lessons.ts`
+- [X] T031 [US0] Implement tutorial progression wiring in `src/domain/tutorial.ts`
+- [X] T032 [US0] Implement TutorialScene guided lesson flow in `src/game/scenes/TutorialScene.ts`
 
 ### Edge Cases & Coverage for User Story 0
 
-- [ ] T033 [US0] Verify all US0 tests pass; confirm FR-001a (no gating) and FR-001b (lesson path) acceptance scenarios
+- [X] T033 [US0] Verify all US0 tests pass; confirm FR-001a (no gating) and FR-001b (lesson path) acceptance scenarios
 
 **Checkpoint**: US0 complete — mode selection and guided Tutorial lesson path independently testable
 
@@ -103,34 +103,34 @@ description: "Task list for Blackjack Card Counting Tutorial Game"
 
 ### Tests for User Story 1 (write first) 🔴
 
-- [ ] T034 [P] [US1] Unit tests for Hi-Lo counting in `tests/unit/counting.test.ts`
-- [ ] T035 [P] [US1] Unit tests for shoe draw/reshuffle in `tests/unit/shoe.test.ts`
-- [ ] T036 [P] [US1] Unit tests for hand valuation edge cases in `tests/unit/hand.test.ts`
-- [ ] T037 [P] [US1] Unit tests for deal/insurance/split/settle in `tests/unit/blackjack.test.ts`
-- [ ] T038 [P] [US1] Unit tests for basic strategy in `tests/unit/strategy.test.ts`
-- [ ] T039 [P] [US1] Functional tests for table session lifecycle in `tests/functional/table-session.test.ts`
-- [ ] T040 [P] [US1] Integration tests for config → deal → count in `tests/integration/practice-table.test.ts`
-- [ ] T041 [P] [US1] Playwright E2E for configure and play hand in `tests/e2e/practice-table.spec.ts`
+- [X] T034 [P] [US1] Unit tests for Hi-Lo counting in `tests/unit/counting.test.ts`
+- [X] T035 [P] [US1] Unit tests for shoe draw/reshuffle in `tests/unit/shoe.test.ts`
+- [X] T036 [P] [US1] Unit tests for hand valuation edge cases in `tests/unit/hand.test.ts`
+- [X] T037 [P] [US1] Unit tests for deal/insurance/split/settle in `tests/unit/blackjack.test.ts`
+- [X] T038 [P] [US1] Unit tests for basic strategy in `tests/unit/strategy.test.ts`
+- [X] T039 [P] [US1] Functional tests for table session lifecycle in `tests/functional/table-session.test.ts`
+- [X] T040 [P] [US1] Integration tests for config → deal → count in `tests/integration/practice-table.test.ts`
+- [X] T041 [P] [US1] Playwright E2E for configure and play hand in `tests/e2e/practice-table.spec.ts`
 
 ### Implementation for User Story 1 🟢
 
-- [ ] T042 [P] [US1] Implement Shoe module in `src/domain/shoe.ts`
-- [ ] T043 [P] [US1] Implement Hi-Lo counting in `src/domain/counting.ts`
-- [ ] T044 [P] [US1] Implement basic strategy tables in `src/domain/strategy.ts`
-- [ ] T045 [US1] Implement blackjack deal/actions/settle in `src/domain/blackjack.ts`
-- [ ] T046 [P] [US1] Implement TableConfiguration types in `src/domain/table-config.ts`
-- [ ] T047 [US1] Implement SetupScene controls (decks, players, hands) in `src/game/scenes/SetupScene.ts`
-- [ ] T048 [US1] Implement TableScene betting and player actions in `src/game/scenes/TableScene.ts`
-- [ ] T049 [US1] Wire GameController hand lifecycle and count events in `src/game/controllers/GameController.ts`
-- [ ] T050 [P] [US1] Add placeholder dog seat rendering in `src/game/scenes/TableScene.ts`
-- [ ] T051 [US1] Wire Tutorial lesson preset table configs to TableScene entry in `src/game/controllers/GameController.ts`
+- [X] T042 [P] [US1] Implement Shoe module in `src/domain/shoe.ts`
+- [X] T043 [P] [US1] Implement Hi-Lo counting in `src/domain/counting.ts`
+- [X] T044 [P] [US1] Implement basic strategy tables in `src/domain/strategy.ts`
+- [X] T045 [US1] Implement blackjack deal/actions/settle in `src/domain/blackjack.ts`
+- [X] T046 [P] [US1] Implement TableConfiguration types in `src/domain/table-config.ts`
+- [X] T047 [US1] Implement SetupScene controls (decks, players, hands) in `src/game/scenes/SetupScene.ts`
+- [X] T048 [US1] Implement TableScene betting and player actions in `src/game/scenes/TableScene.ts`
+- [X] T049 [US1] Wire GameController hand lifecycle and count events in `src/game/controllers/GameController.ts`
+- [X] T050 [P] [US1] Add placeholder dog seat rendering in `src/game/scenes/TableScene.ts`
+- [X] T051 [US1] Wire Tutorial lesson preset table configs to TableScene entry in `src/game/controllers/GameController.ts`
 
 ### Edge Cases & Coverage for User Story 1
 
-- [ ] T052 [P] [US1] Add edge-case tests for shoe exhaustion and hand-count reshuffle in `tests/unit/shoe.test.ts`
-- [ ] T053 [P] [US1] Add edge-case tests for insurance accept/decline/dealer BJ in `tests/unit/blackjack.test.ts`
-- [ ] T054 [P] [US1] Add edge-case tests for multi-seat visible card counting in `tests/unit/counting.test.ts`
-- [ ] T055 [US1] Verify all US1 tests pass; confirm coverage for US1 acceptance scenarios
+- [X] T052 [P] [US1] Add edge-case tests for shoe exhaustion and hand-count reshuffle in `tests/unit/shoe.test.ts`
+- [X] T053 [P] [US1] Add edge-case tests for insurance accept/decline/dealer BJ in `tests/unit/blackjack.test.ts`
+- [X] T054 [P] [US1] Add edge-case tests for multi-seat visible card counting in `tests/unit/counting.test.ts`
+- [X] T055 [US1] Verify all US1 tests pass; confirm coverage for US1 acceptance scenarios
 
 **Checkpoint**: US1 complete — playable configurable table with counting
 
@@ -144,30 +144,30 @@ description: "Task list for Blackjack Card Counting Tutorial Game"
 
 ### Tests for User Story 2 (write first) 🔴
 
-- [ ] T056 [P] [US2] Unit tests for three bet models TC −6..+8 in `tests/unit/bet-models.test.ts`
-- [ ] T057 [P] [US2] Unit tests for bet recommendation clamping in `tests/unit/bet-sizing.test.ts`
-- [ ] T058 [P] [US2] Unit tests for advantage estimation in `tests/unit/advantage.test.ts`
-- [ ] T059 [P] [US2] Functional tests for bet coaching classification in `tests/functional/bet-coaching.test.ts`
-- [ ] T060 [P] [US2] Functional tests for model selection UI content in `tests/functional/bet-model-selection.test.ts`
-- [ ] T061 [P] [US2] Integration tests for analytics series append in `tests/integration/analytics-panel.test.ts`
-- [ ] T062 [P] [US2] Playwright E2E for bet sizing and graphs in `tests/e2e/bet-sizing.spec.ts`
+- [X] T056 [P] [US2] Unit tests for three bet models TC −6..+8 in `tests/unit/bet-models.test.ts`
+- [X] T057 [P] [US2] Unit tests for bet recommendation clamping in `tests/unit/bet-sizing.test.ts`
+- [X] T058 [P] [US2] Unit tests for advantage estimation in `tests/unit/advantage.test.ts`
+- [X] T059 [P] [US2] Functional tests for bet coaching classification in `tests/functional/bet-coaching.test.ts`
+- [X] T060 [P] [US2] Functional tests for model selection UI content in `tests/functional/bet-model-selection.test.ts`
+- [X] T061 [P] [US2] Integration tests for analytics series append in `tests/integration/analytics-panel.test.ts`
+- [X] T062 [P] [US2] Playwright E2E for bet sizing and graphs in `tests/e2e/bet-sizing.spec.ts`
 
 ### Implementation for User Story 2 🟢
 
-- [ ] T063 [P] [US2] Implement three bet models in `src/domain/bet-models.ts`
-- [ ] T064 [P] [US2] Implement advantage estimation in `src/domain/advantage.ts`
-- [ ] T065 [US2] Implement bet recommendation and coaching logic in `src/domain/bet-sizing.ts`
-- [ ] T066 [P] [US2] Implement coaching copy in `src/tutorial/coaching-copy.ts`
-- [ ] T067 [US2] Implement Chart.js balance/advantage charts in `src/ui/charts.ts`
-- [ ] T068 [US2] Implement AnalyticsOverlay toggle in `src/game/scenes/AnalyticsOverlay.ts`
-- [ ] T069 [US2] Add bet model picker and recommendation UI to `src/game/scenes/SetupScene.ts` and `src/game/scenes/TableScene.ts`
-- [ ] T070 [US2] Wire post-hand coaching events in `src/game/controllers/GameController.ts`
+- [X] T063 [P] [US2] Implement three bet models in `src/domain/bet-models.ts`
+- [X] T064 [P] [US2] Implement advantage estimation in `src/domain/advantage.ts`
+- [X] T065 [US2] Implement bet recommendation and coaching logic in `src/domain/bet-sizing.ts`
+- [X] T066 [P] [US2] Implement coaching copy in `src/tutorial/coaching-copy.ts`
+- [X] T067 [US2] Implement Chart.js balance/advantage charts in `src/ui/charts.ts`
+- [X] T068 [US2] Implement AnalyticsOverlay toggle in `src/game/scenes/AnalyticsOverlay.ts`
+- [X] T069 [US2] Add bet model picker and recommendation UI to `src/game/scenes/SetupScene.ts` and `src/game/scenes/TableScene.ts`
+- [X] T070 [US2] Wire post-hand coaching events in `src/game/controllers/GameController.ts`
 
 ### Edge Cases & Coverage for User Story 2
 
-- [ ] T071 [P] [US2] Add edge-case tests for optimal bet below table minimum in `tests/unit/bet-sizing.test.ts`
-- [ ] T072 [P] [US2] Add edge-case tests for bet model switch between hands in `tests/functional/bet-model-selection.test.ts`
-- [ ] T073 [US2] Verify all US2 tests pass; confirm graph data points for 50-hand script
+- [X] T071 [P] [US2] Add edge-case tests for optimal bet below table minimum in `tests/unit/bet-sizing.test.ts`
+- [X] T072 [P] [US2] Add edge-case tests for bet model switch between hands in `tests/functional/bet-model-selection.test.ts`
+- [X] T073 [US2] Verify all US2 tests pass; confirm graph data points for 50-hand script
 
 **Checkpoint**: US2 complete — bet coaching and analytics independently testable
 
@@ -181,31 +181,31 @@ description: "Task list for Blackjack Card Counting Tutorial Game"
 
 ### Tests for User Story 3 (write first) 🔴
 
-- [ ] T074 [P] [US3] Unit tests for learner profile schema in `tests/unit/bankroll.test.ts`
-- [ ] T075 [P] [US3] Unit tests for stay-or-leave composite score in `tests/unit/stay-or-leave.test.ts`
-- [ ] T076 [P] [US3] Unit tests for table join/leave rules in `tests/unit/table-dynamics.test.ts`
-- [ ] T077 [P] [US3] Functional tests for localStorage round-trip in `tests/functional/session-persistence.test.ts`
-- [ ] T078 [P] [US3] Functional tests for join/leave events in `tests/functional/table-dynamics.test.ts`
-- [ ] T079 [P] [US3] Integration tests for persist/reload/mid-hand prompt in `tests/integration/bankroll-flow.test.ts`
-- [ ] T080 [P] [US3] Playwright E2E for persistence, stay-or-leave, and confirmed reset bankroll in `tests/e2e/bankroll-persistence.spec.ts`
+- [X] T074 [P] [US3] Unit tests for learner profile schema in `tests/unit/bankroll.test.ts`
+- [X] T075 [P] [US3] Unit tests for stay-or-leave composite score in `tests/unit/stay-or-leave.test.ts`
+- [X] T076 [P] [US3] Unit tests for table join/leave rules in `tests/unit/table-dynamics.test.ts`
+- [X] T077 [P] [US3] Functional tests for localStorage round-trip in `tests/functional/session-persistence.test.ts`
+- [X] T078 [P] [US3] Functional tests for join/leave events in `tests/functional/table-dynamics.test.ts`
+- [X] T079 [P] [US3] Integration tests for persist/reload/mid-hand prompt in `tests/integration/bankroll-flow.test.ts`
+- [X] T080 [P] [US3] Playwright E2E for persistence, stay-or-leave, and confirmed reset bankroll in `tests/e2e/bankroll-persistence.spec.ts`
 
 ### Implementation for User Story 3 🟢
 
-- [ ] T081 [P] [US3] Implement full learner profile load/save (balance, bet model, preferences) in `src/persistence/learner-profile.ts` extending US0 stubs
-- [ ] T082 [P] [US3] Implement hand snapshot save/load/clear in `src/persistence/hand-snapshot.ts`
-- [ ] T083 [US3] Implement stay-or-leave assessment in `src/domain/stay-or-leave.ts`
-- [ ] T084 [US3] Implement table dynamics join/leave in `src/domain/table-dynamics.ts`
-- [ ] T085 [US3] Wire balance persistence in `src/game/controllers/GameController.ts`
-- [ ] T086 [US3] Implement reset bankroll confirm dialog and action in `src/game/scenes/TableScene.ts`
-- [ ] T087 [US3] Implement mid-hand forfeit/resume dialog in `src/game/scenes/TableScene.ts`
-- [ ] T088 [US3] Wire stay-or-leave coaching toasts in `src/game/scenes/TableScene.ts`
+- [X] T081 [P] [US3] Implement full learner profile load/save (balance, bet model, preferences) in `src/persistence/learner-profile.ts` extending US0 stubs
+- [X] T082 [P] [US3] Implement hand snapshot save/load/clear in `src/persistence/hand-snapshot.ts`
+- [X] T083 [US3] Implement stay-or-leave assessment in `src/domain/stay-or-leave.ts`
+- [X] T084 [US3] Implement table dynamics join/leave in `src/domain/table-dynamics.ts`
+- [X] T085 [US3] Wire balance persistence in `src/game/controllers/GameController.ts`
+- [X] T086 [US3] Implement reset bankroll confirm dialog and action in `src/game/scenes/TableScene.ts`
+- [X] T087 [US3] Implement mid-hand forfeit/resume dialog in `src/game/scenes/TableScene.ts`
+- [X] T088 [US3] Wire stay-or-leave coaching toasts in `src/game/scenes/TableScene.ts`
 
 ### Edge Cases & Coverage for User Story 3
 
-- [ ] T089 [P] [US3] Add edge-case tests for corrupted profile/snapshot recovery in `tests/functional/session-persistence.test.ts`
-- [ ] T090 [P] [US3] Add edge-case tests for insurance refund on forfeit in `tests/integration/bankroll-flow.test.ts`
-- [ ] T091 [P] [US3] Add edge-case tests for drawdown + advantage composite prompts in `tests/unit/stay-or-leave.test.ts`
-- [ ] T092 [US3] Verify all US3 tests pass; confirm FR-011 reset-with-confirm and cross-session persistence
+- [X] T089 [P] [US3] Add edge-case tests for corrupted profile/snapshot recovery in `tests/functional/session-persistence.test.ts`
+- [X] T090 [P] [US3] Add edge-case tests for insurance refund on forfeit in `tests/integration/bankroll-flow.test.ts`
+- [X] T091 [P] [US3] Add edge-case tests for drawdown + advantage composite prompts in `tests/unit/stay-or-leave.test.ts`
+- [X] T092 [US3] Verify all US3 tests pass; confirm FR-011 reset-with-confirm and cross-session persistence
 
 **Checkpoint**: US3 complete — bankroll and stay-or-leave independently testable
 
@@ -219,25 +219,25 @@ description: "Task list for Blackjack Card Counting Tutorial Game"
 
 ### Tests for User Story 4 (write first) 🔴
 
-- [ ] T093 [P] [US4] Unit tests for reduced-motion tween config in `tests/unit/motion-preference.test.ts`
-- [ ] T094 [P] [US4] Functional tests for action-to-sound mapping in `tests/functional/audio-cues.test.ts`
-- [ ] T095 [P] [US4] Integration tests for animation hooks on hand events in `tests/integration/table-presentation.test.ts`
-- [ ] T096 [P] [US4] Playwright E2E for presentation and a11y in `tests/e2e/presentation.spec.ts`
+- [X] T093 [P] [US4] Unit tests for reduced-motion tween config in `tests/unit/motion-preference.test.ts`
+- [X] T094 [P] [US4] Functional tests for action-to-sound mapping in `tests/functional/audio-cues.test.ts`
+- [X] T095 [P] [US4] Integration tests for animation hooks on hand events in `tests/integration/table-presentation.test.ts`
+- [X] T096 [P] [US4] Playwright E2E for presentation and a11y in `tests/e2e/presentation.spec.ts`
 
 ### Implementation for User Story 4 🟢
 
-- [ ] T097 [P] [US4] Add low-poly dog sprite assets in `public/assets/sprites/dogs/`
-- [ ] T098 [P] [US4] Add SFX assets per action category in `public/assets/audio/`
-- [ ] T099 [US4] Implement Howler audio manager in `src/game/audio/AudioManager.ts`
-- [ ] T100 [US4] Implement card/chip animations with reduced-motion branch in `src/game/scenes/TableScene.ts`
-- [ ] T101 [US4] Implement distinct dog character seats in `src/game/scenes/TableScene.ts`
-- [ ] T102 [US4] Wire mute toggle and motion preference in `src/game/scenes/HomeScene.ts`
-- [ ] T103 [US4] Implement keyboard bindings for all primary actions in `src/game/scenes/TableScene.ts`
+- [X] T097 [P] [US4] Add low-poly dog sprite assets in `public/assets/sprites/dogs/`
+- [X] T098 [P] [US4] Add SFX assets per action category in `public/assets/audio/`
+- [X] T099 [US4] Implement Howler audio manager in `src/game/audio/AudioManager.ts`
+- [X] T100 [US4] Implement card/chip animations with reduced-motion branch in `src/game/scenes/TableScene.ts`
+- [X] T101 [US4] Implement distinct dog character seats in `src/game/scenes/TableScene.ts`
+- [X] T102 [US4] Wire mute toggle and motion preference in `src/game/scenes/HomeScene.ts`
+- [X] T103 [US4] Implement keyboard bindings for all primary actions in `src/game/scenes/TableScene.ts`
 
 ### Edge Cases & Coverage for User Story 4
 
-- [ ] T104 [P] [US4] Add edge-case tests for mid-session mute and motion toggle in `tests/functional/audio-cues.test.ts`
-- [ ] T105 [US4] Verify all US4 tests pass; confirm keyboard-only hand completable under reduced motion
+- [X] T104 [P] [US4] Add edge-case tests for mid-session mute and motion toggle in `tests/functional/audio-cues.test.ts`
+- [X] T105 [US4] Verify all US4 tests pass; confirm keyboard-only hand completable under reduced motion
 
 **Checkpoint**: US4 complete — presentation layer polished
 
@@ -247,10 +247,10 @@ description: "Task list for Blackjack Card Counting Tutorial Game"
 
 **Purpose**: Full CI, performance, accessibility audit, documentation
 
-- [ ] T106 [P] Run full CI suite via `npm run test:all` and fix failures
-- [ ] T107 [P] Performance profiling against 60 fps target in `src/game/scenes/TableScene.ts`
-- [ ] T108 Accessibility audit for keyboard paths and coaching clarity in `src/game/scenes/`
-- [ ] T109 Update `specs/001-card-counter-tutorial/quickstart.md` with final commands and smoke steps
+- [X] T106 [P] Run full CI suite via `npm run test:all` and fix failures
+- [X] T107 [P] Performance profiling against 60 fps target in `src/game/scenes/TableScene.ts`
+- [X] T108 Accessibility audit for keyboard paths and coaching clarity in `src/game/scenes/`
+- [X] T109 Update `specs/001-card-counter-tutorial/quickstart.md` with final commands and smoke steps
 
 ---
 

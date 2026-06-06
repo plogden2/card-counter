@@ -1,0 +1,35 @@
+{
+  "name": "card-counter",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.build.json && vite build",
+    "preview": "vite preview",
+    "test": "vitest run tests/unit tests/functional",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "playwright test",
+    "test:all": "npm run test && npm run test:integration && npm run test:e2e"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.9",
+    "howler": "^2.2.4",
+    "phaser": "^3.80.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/howler": "^2.2.12",
+    "@types/node": "^22.15.21",
+    "@vitest/coverage-v8": "^3.1.4",
+    "jsdom": "^26.1.0",
+    "phaser3spectorjs": "^0.0.8",
+    "playwright": "^1.52.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.1.4"
+  }
+}

@@ -4,20 +4,18 @@
 
 ## Prerequisites
 
-- Node.js 22 LTS
+- Node.js 18+ (22 LTS recommended; Vite 6 requires Node ≥ 18)
 - npm 10+
 
 ## Initial setup (first time)
 
 ```bash
 cd card-counter
-npm create vite@latest . -- --template vanilla-ts   # if greenfield; skip if package.json exists
-npm install phaser chart.js howler
-npm install -D vitest @vitest/coverage-v8 playwright @playwright/test
+npm install
 npx playwright install chromium
 ```
 
-> Implementation phase will commit `package.json` scripts below. Until then, use these targets.
+Use Node 22 if available (`nvm use` reads `.nvmrc`).
 
 ## Development
 
