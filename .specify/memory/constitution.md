@@ -1,6 +1,9 @@
 <!--
 Sync Impact Report
 - Version change: 2.0.0 → 3.0.0 (Godot cross-platform rewrite)
+- Consistency fixes (2026-06-06): TDD fourth layer → export smoke / scene integration;
+  Done means aligned; iOS touch targets in Done means; Non-Goals → Android-only exclusion;
+  Spec-First rationale → Godot scenes
 - Modified principles:
   - Phaser-First Game Architecture → Godot-First Game Architecture (redefined)
   - Educational Clarity & Accessible Web → Educational Clarity & Accessible Multi-Platform (expanded)
@@ -23,7 +26,7 @@ documents justified exceptions in the Complexity Tracking table. Each user story
 map to acceptance scenarios and to the test layers that will verify it.
 
 **Rationale**: Card-counting tutorials blend game rules, pedagogy, and UI flow;
-changing them without upfront agreement wastes rework across Phaser scenes and test
+changing them without upfront agreement wastes rework across Godot scenes and test
 suites.
 
 ### Comprehensive Test-Driven Development
@@ -31,13 +34,14 @@ suites.
 All implementation plans and tasks MUST follow strict comprehensive TDD. For every
 feature slice the workflow is non-negotiable:
 
-1. Write unit, functional, integration, and Playwright tests first (red phase).
+1. Write unit, functional, integration, and export smoke tests first (red phase).
 2. Implement the minimum code required to satisfy those tests (green phase).
 3. Refactor while keeping all tests passing.
 4. Add additional tests and edge cases until coverage is complete for the slice.
 
-Plans MUST declare which test files and scenarios cover each layer. A story is NOT
-done until all four layers exist, pass, and edge cases for that story are covered.
+Plans MUST declare which test files and scenarios cover each layer (unit, functional,
+integration, and export smoke / scene integration). A story is NOT done until all four
+layers exist, pass, and edge cases for that story are covered.
 
 **Rationale**: Counting logic and tutorial progression are correctness-critical;
 tests-first prevent regressions in rules, running counts, and learner guidance.
@@ -91,16 +95,17 @@ quality across all export targets.
 **Done means:**
 
 - Acceptance scenarios in the feature spec pass via the declared automated suites.
-- Unit, functional, integration, and Playwright tests were written before implementation
-  for the story, all pass, and edge cases for that story are covered.
+- Unit, functional, integration, and export smoke / scene integration tests were written
+  before implementation for the story, all pass, and edge cases for that story are covered.
 - Counting and blackjack rule logic match documented success criteria with test proof.
-- Reduced-motion and keyboard paths verified when UI motion or controls are present.
+- Reduced-motion, keyboard paths, and iOS touch targets verified when UI motion or controls
+  are present.
 - No unexplained constitution violations in the active plan.
 
 **Explicit non-goals (unless a spec overrides):**
 
 - Real-money gambling, payment processing, or casino-account integration.
-- Native mobile apps (web-first; responsive layout is in scope).
+- Android native apps (iOS is in scope per Educational Multi-Platform principle).
 - Multiplayer or server-authoritative tables without an explicit spec requirement.
 - Advantage-play deployment tooling (trip bankroll, camouflage, team signaling, etc.).
 
