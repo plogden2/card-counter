@@ -89,6 +89,11 @@ godot --headless --path godot --export-release "iOS" dist/ios/CardCounter.xcodep
 
 iOS notes:
 - A macOS machine with Xcode is required for signing, archiving, and App Store submission.
+- Maintain minimum `44pt` touch targets for action/sidebar controls.
+- Submission checklist:
+  - App category: Education (or Educational Game).
+  - Free app listing.
+  - No in-app purchases.
 
 ## Port reference
 
