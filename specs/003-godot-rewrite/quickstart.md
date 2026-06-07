@@ -99,7 +99,7 @@ iOS notes:
 
 When implementing domain modules, port from:
 
-- `src/domain/*.ts` → `godot/scripts/domain/*.gd`
-- `tests/unit/*.test.ts` → `godot/tests/unit/test_*.gd`
+- `src-phaser-archive/domain/*.ts` → `godot/scripts/domain/*.gd`
+- `tests-phaser-archive/unit/*.test.ts` → `godot/tests/unit/test_*.gd`
 
-Tests in the Phaser codebase are the acceptance specification.
+Tests in the Phaser archive are the acceptance specification.

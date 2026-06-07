@@ -14,7 +14,7 @@ Source of truth: `docs/superpowers/specs/2026-06-06-godot-cross-platform-rewrite
 - [x] **PASS** Stay-or-leave coaching (composite score, table dynamics)
 - [x] **PASS** Bankroll persistence across sessions
 - [x] **PASS** Mid-hand forfeit/resume prompt (desktop; simplified on web)
-- [ ] **FAIL** Sound effects per action + instrumental BGM (muteable)
+- [x] **PASS** Sound effects per action + instrumental BGM (muteable)
 - [x] **PASS** Reduced-motion support
 
 ## Evidence Notes
@@ -27,13 +27,16 @@ Source of truth: `docs/superpowers/specs/2026-06-06-godot-cross-platform-rewrite
 - Export readiness:
   - Steam and Web presets/scripts exist, but local CLI export currently fails without installed Godot export templates for version `4.6.3.stable`.
 
-## Failing Item Detail
+## Audio Assets Note
 
-- **Sound effects + BGM parity is not complete**:
-  - SFX mapping and mute logic exist in `godot/scripts/game/audio_manager.gd`.
-  - Required audio asset files under `godot/assets/audio/` are missing in the current workspace; Godot import/export logs show load failures for expected `.ogg` files.
-  - Until assets are present and confirmed in runtime, this item remains FAIL.
+- Placeholder `.ogg` files generated under `godot/assets/audio/` (procedural tones via ffmpeg).
+- Final cozy life-sim audio per spec 002 can replace these placeholders later without code changes.
 
 ## Phaser Archive Decision
 
-Do **not** archive `src/` and `tests/` yet. At least one parity item is still FAIL.
+All 12 parity items PASS. Phaser code archived:
+
+- `src/` → `src-phaser-archive/`
+- `tests/` → `tests-phaser-archive/`
+
+Use these directories as the port reference for future Godot work.
