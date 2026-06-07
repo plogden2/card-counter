@@ -68,7 +68,7 @@ Steam packaging notes:
 ### Web
 
 ```bash
-godot --headless --path godot --export-release "Web" dist/web/index.html
+powershell -ExecutionPolicy Bypass -File scripts/build-web.ps1
 npx serve dist/web
 ```
 
@@ -76,6 +76,10 @@ Web caveats:
 - HTML5 downloads are larger than the Phaser/Vite build.
 - Mid-hand recovery can be simplified on web due to browser tab lifecycle.
 - Persistence uses browser-backed `user://` storage (IndexedDB).
+- Web export attempt status (Task 28): failed locally until matching Godot export templates are installed.
+- Missing template paths observed:
+  - `C:/Users/gener/AppData/Roaming/Godot/export_templates/4.6.3.stable/web_nothreads_debug.zip`
+  - `C:/Users/gener/AppData/Roaming/Godot/export_templates/4.6.3.stable/web_nothreads_release.zip`
 
 ### iOS (requires Mac + Xcode)
 
