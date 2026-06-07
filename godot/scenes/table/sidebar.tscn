@@ -1,0 +1,85 @@
+[gd_scene load_steps=2 format=3 uid="uid://dug88lb6w1q2n"]
+
+[ext_resource type="Script" path="res://scripts/scenes/sidebar.gd" id="1_sidebar_script"]
+
+[node name="Sidebar" type="VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+script = ExtResource("1_sidebar_script")
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Table Stats"
+
+[node name="RunningCountRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="RunningCountLabel" type="Label" parent="RunningCountRow"]
+layout_mode = 2
+text = "Running Count"
+
+[node name="RunningCountValue" type="Label" parent="RunningCountRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+horizontal_alignment = 2
+text = "0"
+
+[node name="TrueCountRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TrueCountLabel" type="Label" parent="TrueCountRow"]
+layout_mode = 2
+text = "True Count"
+
+[node name="TrueCountValue" type="Label" parent="TrueCountRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+horizontal_alignment = 2
+text = "0"
+
+[node name="BankrollRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="BankrollLabel" type="Label" parent="BankrollRow"]
+layout_mode = 2
+text = "Bankroll"
+
+[node name="BankrollValue" type="Label" parent="BankrollRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+horizontal_alignment = 2
+text = "$1000"
+
+[node name="RecommendedBetRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="RecommendedBetLabel" type="Label" parent="RecommendedBetRow"]
+layout_mode = 2
+text = "Recommended Bet"
+
+[node name="RecommendedBetValue" type="Label" parent="RecommendedBetRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+horizontal_alignment = 2
+text = "$25"
+
+[node name="ShoeProgressRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ShoeProgressLabel" type="Label" parent="ShoeProgressRow"]
+layout_mode = 2
+text = "Shoe Progress"
+
+[node name="ShoeProgressValue" type="Label" parent="ShoeProgressRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+horizontal_alignment = 2
+text = "0%"

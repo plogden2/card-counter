@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8m8h7f5u21h6"]
+
+[ext_resource type="PackedScene" path="res://scenes/table/table_root.tscn" id="1_table_root"]
+
+[node name="Table" instance=ExtResource("1_table_root")]

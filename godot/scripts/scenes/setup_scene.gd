@@ -37,6 +37,8 @@ func start_table() -> void:
 
 func _on_start_pressed() -> void:
 	start_table()
+	if not Engine.is_editor_hint():
+		SceneRouter.go_to("table")
 
 
 func _on_home_pressed() -> void:
