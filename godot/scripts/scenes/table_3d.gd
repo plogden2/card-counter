@@ -28,6 +28,7 @@ const SURFACE_PLAQUE_FACE := Color(0.85, 0.78, 0.65)
 const SURFACE_TEXT_COLOR := Color(0.949, 0.91, 0.835)
 const HAND_BOARD_FRAME := Color(0.32, 0.22, 0.14)
 const HAND_BOARD_FACE := Color(0.07, 0.07, 0.08)
+const HAND_BOARD_OVERVIEW_FACE := Color(0.94, 0.9, 0.82)
 const HAND_BOARD_TEXT := Color(1.0, 1.0, 1.0)
 const HAND_BOARD_SIZE := Vector3(0.26, 0.05, 0.18)
 const HAND_BOARD_TILT_DEG := 42.0
@@ -44,9 +45,9 @@ const CAMERA_TOPDOWN_POS := Vector3(0.0, 7.2, 0.0)
 const CAMERA_TOPDOWN_LOOK := Vector3(0.0, TABLE_SURFACE_Y, 0.0)
 const CAMERA_TOPDOWN_SIZE := 3.85
 const CAMERA_TOPDOWN_ROT := Vector3(-PI * 0.5, 0.0, 0.0)
-const HAND_BOARD_OVERVIEW_SCALE := 1.8
+const HAND_BOARD_OVERVIEW_SCALE := 1.65
 const HAND_BOARD_HOME_FONT := 56
-const HAND_BOARD_OVERVIEW_FONT := 84
+const HAND_BOARD_OVERVIEW_FONT := 88
 const TABLE_RX := 1.52
 const TABLE_RZ := 2.08
 const TABLE_DEALER_Z := -0.52
@@ -679,6 +680,8 @@ func _build_hand_total_plaque() -> Node3D:
 	value_label.text = ""
 	value_label.font_size = HAND_BOARD_HOME_FONT
 	value_label.modulate = HAND_BOARD_TEXT
+	value_label.outline_size = 8
+	value_label.outline_modulate = Color(0.0, 0.0, 0.0, 0.85)
 	value_label.position = Vector3(0.0, HAND_BOARD_SIZE.y * 0.52 + 0.008, 0.0)
 	value_label.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -759,7 +762,19 @@ func _process_hand_total_bake_queue() -> void:
 		_process_hand_total_bake_queue()
 		return
 	_ensure_hand_total_renderer()
+	var overview := _table_overview
 	_hand_total_renderer_label.text = text
+	_hand_total_renderer_label.add_theme_font_size_override(
+		"font_size",
+		220 if overview else 168
+	)
+	var backdrop: ColorRect = _hand_total_renderer.get_child(0) as ColorRect
+	if backdrop != null:
+		backdrop.color = HAND_BOARD_OVERVIEW_FACE if overview else HAND_BOARD_FACE
+	_hand_total_renderer_label.add_theme_color_override(
+		"font_color",
+		Color(0.08, 0.08, 0.1) if overview else HAND_BOARD_TEXT
+	)
 	_hand_total_renderer.render_target_update_mode = SubViewport.UPDATE_ONCE
 	_bake_hand_total_texture_when_ready(text, face)
 
@@ -873,11 +888,15 @@ func _ensure_hand_total_label(seat_id: String, total: int) -> void:
 	_style_hand_total_board(anchor_node, seat_id)
 	anchor_node.visible = total > 0
 	var value_label: Label3D = anchor_node.get_node_or_null("Plaque/Value")
-	if value_label != null:
-		value_label.text = str(total) if total > 0 else ""
 	var face_display: MeshInstance3D = anchor_node.get_node_or_null("Plaque/FaceDisplay")
-	if face_display != null and total <= 0:
-		_paint_mesh(face_display, HAND_BOARD_FACE)
+	var total_text := str(total) if total > 0 else ""
+	if value_label != null:
+		value_label.text = total_text
+	if face_display != null:
+		if total > 0:
+			_queue_hand_total_texture(face_display, total_text)
+		else:
+			_paint_mesh(face_display, HAND_BOARD_FACE)
 
 
 func _attach_hand_total_board(board: Node3D, seat_id: String) -> void:
@@ -892,26 +911,70 @@ func _attach_hand_total_board(board: Node3D, seat_id: String) -> void:
 
 func _style_hand_total_board(board: Node3D, seat_id: String) -> void:
 	_attach_hand_total_board(board, seat_id)
+	var frame: Node3D = board.get_node_or_null("Plaque/Frame")
+	var face_display: MeshInstance3D = board.get_node_or_null("Plaque/FaceDisplay")
+	var value_label: Label3D = board.get_node_or_null("Plaque/Value")
+	var stand: Node3D = board.get_node_or_null("Plaque/Stand")
 	if _table_overview:
 		board.scale = Vector3.ONE * HAND_BOARD_OVERVIEW_SCALE
 		board.position = _hand_total_overview_position(seat_id)
-		board.rotation_degrees = Vector3(-90.0, _hand_total_yaw_deg(seat_id), 0.0)
+		board.rotation_degrees = Vector3(0.0, _hand_total_yaw_deg(seat_id), 0.0)
+		if frame != null:
+			frame.visible = false
+		if stand != null:
+			stand.visible = false
+		if face_display != null:
+			face_display.visible = true
+			face_display.position = Vector3(0.0, 0.006, 0.0)
+			face_display.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+			if face_display.material_override == null:
+				_paint_mesh(face_display, HAND_BOARD_OVERVIEW_FACE)
+		if value_label != null:
+			value_label.font_size = HAND_BOARD_OVERVIEW_FONT
+			value_label.position = Vector3(0.0, 0.018, 0.0)
+			value_label.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+			value_label.billboard = BaseMaterial3D.BILLBOARD_DISABLED
+			value_label.no_depth_test = true
 	else:
 		board.scale = Vector3.ONE
-	var value_label: Label3D = board.get_node_or_null("Plaque/Value")
-	if value_label != null:
-		value_label.font_size = HAND_BOARD_OVERVIEW_FONT if _table_overview else HAND_BOARD_HOME_FONT
-	var stand: Node3D = board.get_node_or_null("Plaque/Stand")
-	if stand != null:
-		stand.visible = not _table_overview
+		if frame != null:
+			frame.visible = true
+		if stand != null:
+			stand.visible = true
+		if face_display != null:
+			face_display.visible = true
+			face_display.position = Vector3(0.0, HAND_BOARD_SIZE.y * 0.52, 0.0)
+			face_display.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+		if value_label != null:
+			value_label.font_size = HAND_BOARD_HOME_FONT
+			value_label.position = Vector3(0.0, HAND_BOARD_SIZE.y * 0.52 + 0.008, 0.0)
+			value_label.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+			value_label.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+			value_label.no_depth_test = false
 
 
 func _hand_total_overview_position(seat_id: String) -> Vector3:
 	var base: Vector3 = _SEAT_CARD_BASES.get(seat_id, Vector3.ZERO)
 	if _seat_card_groups.has(seat_id):
 		base = _seat_card_groups[seat_id].position
-	var offset: Vector3 = _hand_total_board_offset(seat_id) * 1.35
-	return Vector3(base.x + offset.x, TABLE_SURFACE_Y + 0.045, base.z + offset.z)
+	var offset: Vector3 = _hand_total_overview_offset(seat_id)
+	return Vector3(base.x + offset.x, TABLE_SURFACE_Y + 0.02, base.z + offset.z)
+
+
+func _hand_total_overview_offset(seat_id: String) -> Vector3:
+	match seat_id:
+		"dealer":
+			return Vector3(0.34, 0.0, 0.22)
+		"learner":
+			return Vector3(0.34, 0.0, -0.24)
+		_:
+			if _seat_card_groups.has(seat_id):
+				var base_x: float = _seat_card_groups[seat_id].position.x
+				if base_x < -0.5:
+					return Vector3(0.28, 0.0, -0.16)
+				if base_x > 0.5:
+					return Vector3(-0.28, 0.0, -0.16)
+			return Vector3(0.28, 0.0, -0.16)
 
 
 func _refresh_all_hand_total_boards() -> void:
@@ -919,6 +982,10 @@ func _refresh_all_hand_total_boards() -> void:
 		var board: Node3D = _hand_total_labels[seat_id]
 		if is_instance_valid(board) and board.visible:
 			_style_hand_total_board(board, str(seat_id))
+			var value_label: Label3D = board.get_node_or_null("Plaque/Value")
+			var face_display: MeshInstance3D = board.get_node_or_null("Plaque/FaceDisplay")
+			if value_label != null and face_display != null and value_label.text != "":
+				_queue_hand_total_texture(face_display, value_label.text)
 
 
 func _hand_total_world_position(seat_id: String) -> Vector3:
