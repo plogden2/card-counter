@@ -96,12 +96,15 @@ def make_face(rank: str, suit: str) -> Image.Image:
     draw.rectangle((18, 18, WIDTH - 19, HEIGHT - 19), outline=border, width=2)
 
     color = SUIT_COLORS[suit]
-    rank_font = _load_font(40 if rank != "10" else 34)
-    _draw_centered(draw, rank, (44, 44), rank_font, color)
-    _draw_suit(draw, suit, (44, 86), 34, color)
+    rank_font = _load_font(48 if rank == "10" else 62)
+    pip_font_corner = 30
+    corner_rank_pos = (50, 52)
+    corner_pip_pos = (50, 104)
+    _draw_centered(draw, rank, corner_rank_pos, rank_font, color)
+    _draw_suit(draw, suit, corner_pip_pos, pip_font_corner, color)
     _draw_suit(draw, suit, (WIDTH // 2, HEIGHT // 2), 120, color)
-    _draw_suit(draw, suit, (WIDTH - 44, HEIGHT - 86), 34, color)
-    _draw_centered(draw, rank, (WIDTH - 44, HEIGHT - 44), rank_font, color)
+    _draw_suit(draw, suit, (WIDTH - corner_pip_pos[0], HEIGHT - corner_pip_pos[1]), pip_font_corner, color)
+    _draw_centered(draw, rank, (WIDTH - corner_rank_pos[0], HEIGHT - corner_rank_pos[1]), rank_font, color)
     return img
 
 

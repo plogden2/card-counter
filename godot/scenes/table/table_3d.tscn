@@ -4,10 +4,10 @@
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
-background_color = Color(0.08, 0.06, 0.05, 1)
+background_color = Color(0.12, 0.22, 0.14, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.55, 0.48, 0.42, 1)
-ambient_light_energy = 0.65
+ambient_light_energy = 0.45
 tonemap_mode = 2
 tonemap_exposure = 1.15
 
@@ -49,25 +49,36 @@ physics_object_picking = true
 
 [node name="Camera3D" type="Camera3D" parent="SubViewport/World"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.848048, 0.529919, 0, -0.529919, 0.848048, 0, 3.15, 3.35)
+transform = Transform3D(0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 5.0, 4.3, 5.0)
+projection = 1
+size = 5.2
+current = true
 fov = 48.0
 
 [node name="LampLight" type="OmniLight3D" parent="SubViewport/World"]
-position = Vector3(0, 2.55, 0.15)
-light_color = Color(1, 0.86, 0.62, 1)
-light_energy = 4.5
-omni_range = 8.0
+position = Vector3(0, 2.85, 0)
+light_color = Color(1, 0.9, 0.72, 1)
+light_energy = 2.4
+omni_range = 7.5
 
 [node name="FillLight" type="OmniLight3D" parent="SubViewport/World"]
 position = Vector3(-2.5, 2.0, 2.0)
 light_color = Color(0.75, 0.82, 0.95, 1)
-light_energy = 1.2
+light_energy = 0.55
 omni_range = 10.0
 
 [node name="Sun" type="DirectionalLight3D" parent="SubViewport/World"]
 rotation = Vector3(-1.1, 0.4, 0)
 light_color = Color(0.95, 0.88, 0.78, 1)
-light_energy = 0.55
+light_energy = 0.3
+
+[node name="OverheadSpot" type="SpotLight3D" parent="SubViewport/World"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 2.95, 0)
+light_color = Color(1, 0.94, 0.82, 1)
+light_energy = 4.0
+spot_range = 8.0
+spot_angle = 52.0
+shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewport/World"]
 environment = SubResource("Environment_1")
@@ -75,107 +86,8 @@ environment = SubResource("Environment_1")
 [node name="RoomRoot" type="Node3D" parent="SubViewport/World"]
 unique_name_in_owner = true
 
-[node name="Floor" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0)
-mesh = SubResource("CylinderMesh_rim")
-scale = Vector3(2.8, 0.02, 2.8)
-
-[node name="BackWall" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, -3.2)
-mesh = SubResource("BoxMesh_tray")
-scale = Vector3(8, 2.4, 0.15)
-
-[node name="Wainscot" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -3.15)
-mesh = SubResource("BoxMesh_tray")
-scale = Vector3(8, 1.1, 0.16)
-
-[node name="LeftWall" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 1.6, 0)
-mesh = SubResource("BoxMesh_tray")
-scale = Vector3(0.15, 3.2, 6.5)
-
-[node name="RightWall" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 1.6, 0)
-mesh = SubResource("BoxMesh_tray")
-scale = Vector3(0.15, 3.2, 6.5)
-
-[node name="Bookshelf" type="Node3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -2.6)
-
-[node name="BookShelfBody" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Bookshelf"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
-mesh = SubResource("BoxMesh_tray")
-scale = Vector3(1.2, 1.5, 0.35)
-
-[node name="Book1" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Bookshelf"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.5, 0.05)
-mesh = SubResource("BoxMesh_shoe")
-scale = Vector3(0.15, 0.35, 0.25)
-
-[node name="Book2" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Bookshelf"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0.05)
-mesh = SubResource("BoxMesh_shoe")
-scale = Vector3(0.18, 0.4, 0.25)
-
-[node name="Book3" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Bookshelf"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.48, 0.05)
-mesh = SubResource("BoxMesh_shoe")
-scale = Vector3(0.14, 0.32, 0.25)
-
-[node name="Clock" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 2.1, -2.9)
-mesh = SubResource("BoxMesh_shoe")
-scale = Vector3(0.5, 0.5, 0.08)
-
-[node name="WindowFrame" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 1.5, -3.05)
-mesh = SubResource("BoxMesh_tray")
-scale = Vector3(1.6, 1.2, 0.1)
-
-[node name="WindowGlass" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 1.5, -2.98)
-mesh = SubResource("BoxMesh_tray")
-scale = Vector3(1.4, 1.0, 0.02)
-
-[node name="Skyline" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 1.3, -3.2)
-mesh = SubResource("BoxMesh_tray")
-scale = Vector3(1.3, 0.35, 0.05)
-
-[node name="WallArt" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.8, -3.0)
-mesh = SubResource("BoxMesh_tray")
-scale = Vector3(0.7, 0.5, 0.05)
-
-[node name="Plant1" type="Node3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0, 0, -2.2)
-
-[node name="Pot" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Plant1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
-mesh = SubResource("CylinderMesh_felt")
-scale = Vector3(0.18, 0.3, 0.18)
-
-[node name="PlantLeaves" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Plant1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
-mesh = SubResource("BoxMesh_shoe")
-scale = Vector3(0.35, 0.5, 0.35)
-
-[node name="Plant2" type="Node3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0, 1.8)
-
-[node name="Pot" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Plant2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
-mesh = SubResource("CylinderMesh_felt")
-scale = Vector3(0.14, 0.24, 0.14)
-
-[node name="PlantLeaves" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Plant2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
-mesh = SubResource("BoxMesh_shoe")
-scale = Vector3(0.28, 0.4, 0.28)
-
 [node name="LampMesh" type="Node3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 0)
 
 [node name="LampCord" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/LampMesh"]
 mesh = SubResource("BoxMesh_shoe")
@@ -188,13 +100,11 @@ scale = Vector3(0.45, 0.2, 0.45)
 
 [node name="TableRim" type="MeshInstance3D" parent="SubViewport/World"]
 unique_name_in_owner = true
-transform = Transform3D(1.18, 0, 0, 0, 1, 0, 0, 0, 0.88, 0, 0.04, 0)
-mesh = SubResource("CylinderMesh_rim")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.112, 0)
 
 [node name="TableMesh" type="MeshInstance3D" parent="SubViewport/World"]
 unique_name_in_owner = true
-transform = Transform3D(1.18, 0, 0, 0, 1, 0, 0, 0, 0.88, 0, 0.1, 0)
-mesh = SubResource("CylinderMesh_felt")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.112, 0)
 
 [node name="ChipStack1" type="MeshInstance3D" parent="SubViewport/World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.14, 0.35)

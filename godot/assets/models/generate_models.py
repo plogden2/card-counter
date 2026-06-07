@@ -256,10 +256,40 @@ def build_husky_player() -> FacetedMesh:
 
 
 def build_round_table() -> FacetedMesh:
-    """Oval felt top + wooden rim (Ref A)."""
+    """Blackjack half-ellipse: flat dealer edge, curved player rail."""
     m = FacetedMesh()
-    m.add_cylinder(0, 0.04, 0, 1.35, 0.07, 12, rx_scale=1.18, rz_scale=0.92)  # felt
-    m.add_cylinder(0, 0.1, 0, 1.52, 0.14, 12, rx_scale=1.18, rz_scale=0.92)  # rim
+    rx, dealer_z, rz = 1.35, -0.52, 1.55
+    segments = 24
+    top_y, rim_drop = 0.04, 0.12
+    outline: list[tuple[float, float]] = []
+    for i in range(segments + 1):
+        angle = math.pi * i / segments
+        outline.append((rx * math.cos(angle), dealer_z + rz * math.sin(angle)))
+    cx = sum(p[0] for p in outline) / len(outline)
+    cz = sum(p[1] for p in outline) / len(outline)
+    for i in range(len(outline) - 1):
+        x0, z0 = outline[i]
+        x1, z1 = outline[i + 1]
+        m.add_triangle((cx, top_y, cz), (x0, top_y, z0), (x1, top_y, z1))
+    for i in range(len(outline) - 1):
+        x0, z0 = outline[i]
+        x1, z1 = outline[i + 1]
+        dx, dz = x0 - cx, z0 - cz
+        length = math.sqrt(dx * dx + dz * dz) or 1.0
+        ox, oz = x0 + dx / length * 0.14, z0 + dz / length * 0.14
+        ox1, oz1 = x1 + (x1 - cx) / (math.sqrt((x1 - cx) ** 2 + (z1 - cz) ** 2) or 1) * 0.14, z1 + (z1 - cz) / (math.sqrt((x1 - cx) ** 2 + (z1 - cz) ** 2) or 1) * 0.14
+        m.add_quad(
+            (x0, top_y, z0),
+            (x1, top_y, z1),
+            (x1, top_y - rim_drop, z1),
+            (x0, top_y - rim_drop, z0),
+        )
+        m.add_quad(
+            (ox, top_y, oz),
+            (ox1, top_y, oz1),
+            (ox1, top_y - rim_drop, oz1),
+            (ox, top_y - rim_drop, oz),
+        )
     return m
 
 

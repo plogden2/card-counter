@@ -4,6 +4,7 @@ const SIDEBAR_SCENE = preload("res://scenes/table/sidebar.tscn")
 const CardLayout = preload("res://scripts/presentation/card_layout.gd")
 const ActionMenu = preload("res://scripts/presentation/action_menu.gd")
 const CoachingCue = preload("res://scripts/presentation/coaching_cue.gd")
+const TableDynamics = preload("res://scripts/domain/table_dynamics.gd")
 const UiTheme = preload("res://scripts/lib/ui_theme.gd")
 const COACH_OVERLAY_SCENE = preload("res://scenes/table/tutorial_coach_overlay.tscn")
 const STATUS_BAR_SCENE = preload("res://scenes/table/tutorial_status_bar.tscn")
@@ -241,6 +242,8 @@ func _update_from_session() -> void:
 
 	var presentation: Dictionary = CardLayout.build(session)
 	if _table_3d != null:
+		var other_dogs := TableDynamics.count_other_players(session.get("seats", []))
+		_table_3d.call("configure_table_dogs", other_dogs)
 		_table_3d.call("sync_presentation", presentation, motion_reduced)
 		var wager: int = int(session.get("currentWager", 0))
 		_table_3d.call("sync_chip_wager", wager, phase, motion_reduced)
@@ -435,6 +438,8 @@ func _recommended_bet(session: Dictionary) -> int:
 
 
 func _apply_layout_for_width(width: float) -> void:
+	if _main_split == null or _sidebar_container == null or _table_area == null:
+		return
 	if width < 900.0:
 		if _current_layout != "stacked":
 			_main_split.vertical = true
