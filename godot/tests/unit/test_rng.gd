@@ -2,8 +2,8 @@ extends GutTest
 
 
 func assert_raises(expected_msg: String, callable: Callable) -> void:
-	var pre_fails := get_fail_count()
-	var saved := gut.treat_error_as_failure
+	var pre_fails: int = int(get_fail_count())
+	var saved: bool = bool(gut.treat_error_as_failure)
 	gut.treat_error_as_failure = true
 	var result = callable.call()
 	gut.treat_error_as_failure = saved
