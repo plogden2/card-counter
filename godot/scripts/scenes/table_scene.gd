@@ -6,6 +6,7 @@ const SIDEBAR_SCENE = preload("res://scenes/table/sidebar.tscn")
 @onready var _sidebar_container: Control = %SidebarContainer
 @onready var _sidebar: VBoxContainer = %Sidebar
 @onready var _main_split: BoxContainer = %MainSplit
+@onready var _table_3d: SubViewportContainer = %Viewport3D
 @onready var _felt_label: Label = %FeltLabel
 @onready var _dealer_label: Label = %DealerCards
 @onready var _player_label: Label = %PlayerCards
@@ -138,6 +139,7 @@ func _update_from_session() -> void:
 	_dealer_label.text = "Dealer: %s" % dealer_text
 	_player_label.text = "Player: %s" % cards_text
 	_phase_label.text = phase
+	_sync_3d_view(session, learner_cards, dealer_cards)
 
 	_sidebar.call("update_stats", {
 		"runningCount": int(session.get("countState", {}).get("runningCount", 0)),
@@ -224,6 +226,18 @@ func _recommended_bet(session: Dictionary) -> int:
 	var true_count: int = int(session.get("countState", {}).get("trueCount", 0))
 	var candidate: int = min_bet + maxi(true_count, 0) * min_bet
 	return clampi(candidate, min_bet, max_bet)
+
+
+func _sync_3d_view(session: Dictionary, learner_cards: Array, dealer_cards: Array) -> void:
+	if _table_3d == null:
+		return
+	var cards_to_show: Array = []
+	cards_to_show.append_array(learner_cards)
+	cards_to_show.append_array(dealer_cards)
+	var seats: Array = session.get("seats", [])
+	var dog_count: int = maxi(0, seats.size() - 1)
+	_table_3d.call("set_dog_count", dog_count)
+	_table_3d.call("deal_cards", cards_to_show, bool(_controller.call("get_profile").get("motionReduced", false)))
 
 
 func _apply_layout_for_width(width: float) -> void:

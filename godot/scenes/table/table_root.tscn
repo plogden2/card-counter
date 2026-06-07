@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1kt0w1rth0f0"]
+[gd_scene load_steps=4 format=3 uid="uid://d1kt0w1rth0f0"]
 
 [ext_resource type="Script" path="res://scripts/scenes/table_scene.gd" id="1_table_scene"]
 [ext_resource type="PackedScene" path="res://scenes/table/sidebar.tscn" id="2_sidebar"]
+[ext_resource type="PackedScene" path="res://scenes/table/table_3d.tscn" id="3_table_3d"]
 
 [node name="TableRoot" type="Control"]
 layout_mode = 3
@@ -46,14 +47,10 @@ size_flags_vertical = 3
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Felt" type="ColorRect" parent="Padding/MainSplit/TableArea/TableVBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-custom_minimum_size = Vector2(0, 360)
-color = Color(0.0901961, 0.368627, 0.227451, 1)
+[node name="Viewport3D" parent="Padding/MainSplit/TableArea/TableVBox" instance=ExtResource("3_table_3d")]
+unique_name_in_owner = true
 
-[node name="FeltOverlay" type="VBoxContainer" parent="Padding/MainSplit/TableArea/TableVBox/Felt"]
+[node name="FeltOverlay" type="VBoxContainer" parent="Padding/MainSplit/TableArea/TableVBox/Viewport3D"]
 layout_mode = 2
 anchors_preset = 15
 anchor_right = 1.0
