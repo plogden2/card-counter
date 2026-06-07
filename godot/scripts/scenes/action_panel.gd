@@ -22,7 +22,12 @@ var _hover_tweens: Dictionary = {}
 
 func _ready() -> void:
 	UiTheme.apply_to(self, UiTheme.ScreenClass.ACTION)
+	theme = UiTheme.load_theme()
 	_build_buttons()
+	for child in _button_row.get_children():
+		if child is Button:
+			child.add_theme_font_size_override("font_size", 16)
+			child.custom_minimum_size = Vector2(130, 48)
 
 
 func set_motion_reduced(reduced: bool) -> void:
@@ -40,6 +45,14 @@ func get_highlighted_action_id() -> String:
 func set_highlight(action_id: String) -> void:
 	_highlight_id = action_id
 	_apply_highlights()
+
+
+func set_action_visible(action_id: String, visible: bool) -> void:
+	var button: Button = _buttons.get(action_id)
+	if button == null:
+		return
+	button.visible = visible
+	button.disabled = not visible
 
 
 func render(session: Dictionary) -> void:
@@ -124,23 +137,10 @@ func _apply_highlights() -> void:
 		if action_id == _highlight_id and button.visible:
 			button.text = HIGHLIGHT_PREFIX + base_label
 			button.add_theme_color_override("font_color", Color(1.0, 0.92, 0.55))
-			button.add_theme_stylebox_override("normal", _glow_style())
+			button.add_theme_stylebox_override("normal", UiTheme.style_button_glow())
 			button.tooltip_text = "Recommended action"
 		else:
 			button.text = base_label
 			button.remove_theme_color_override("font_color")
 			button.remove_theme_stylebox_override("normal")
 			button.tooltip_text = ""
-
-
-func _glow_style() -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = Color(0.35, 0.52, 0.22, 1.0)
-	box.border_color = Color(1.0, 0.85, 0.45, 1.0)
-	box.set_border_width_all(3)
-	box.set_corner_radius_all(12)
-	box.content_margin_left = 16
-	box.content_margin_top = 10
-	box.content_margin_right = 16
-	box.content_margin_bottom = 10
-	return box

@@ -38,21 +38,33 @@ theme_override_constants/separation = 16
 [node name="SidebarContainer" type="PanelContainer" parent="Padding/MainSplit"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 1
+size_flags_vertical = 3
 
-[node name="Sidebar" parent="Padding/MainSplit/SidebarContainer" instance=ExtResource("2_sidebar")]
+[node name="SidebarScroll" type="ScrollContainer" parent="Padding/MainSplit/SidebarContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Sidebar" parent="Padding/MainSplit/SidebarContainer/SidebarScroll" instance=ExtResource("2_sidebar")]
 unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="TableArea" type="PanelContainer" parent="Padding/MainSplit"]
+[node name="TableArea" type="Control" parent="Padding/MainSplit"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+clip_contents = true
 
 [node name="TableStack" type="Control" parent="Padding/MainSplit/TableArea"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Viewport3D" parent="Padding/MainSplit/TableArea/TableStack" instance=ExtResource("3_table_3d")]
 unique_name_in_owner = true
@@ -60,8 +72,20 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_bottom = -76.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="OverlayLayer" type="Control" parent="Padding/MainSplit/TableArea/TableStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -76.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="ActionPanel" parent="Padding/MainSplit/TableArea/TableStack" instance=ExtResource("4_action_panel")]
 unique_name_in_owner = true
@@ -70,8 +94,10 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = -76.0
 grow_horizontal = 2
 grow_vertical = 0
+mouse_filter = 0
 
 [node name="AnalyticsDrawer" parent="." instance=ExtResource("5_analytics_drawer")]
 unique_name_in_owner = true

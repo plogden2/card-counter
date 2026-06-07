@@ -54,21 +54,30 @@ class FacetedMesh:
             (cx + hx, cy + hy, cz + hz),
             (cx - hx, cy + hy, cz + hz),
         ]
-        faces = [
-            (0, 1, 2, 3),
-            (4, 5, 6, 7),
-            (0, 4, 7, 3),
-            (1, 5, 6, 2),
-            (3, 2, 6, 7),
-            (0, 1, 5, 4),
-        ]
+        faces = [(0, 1, 2, 3), (4, 5, 6, 7), (0, 4, 7, 3), (1, 5, 6, 2), (3, 2, 6, 7), (0, 1, 5, 4)]
         for f in faces:
             self.add_quad(*(corners[i] for i in f))
 
-    def add_cylinder(self, cx: float, cy: float, cz: float, r: float, h: float, segments: int = 8) -> None:
+    def add_cylinder(
+        self,
+        cx: float,
+        cy: float,
+        cz: float,
+        r: float,
+        h: float,
+        segments: int = 8,
+        rx_scale: float = 1.0,
+        rz_scale: float = 1.0,
+    ) -> None:
         hy = h / 2
-        top = [(cx + r * math.cos(a), cy + hy, cz + r * math.sin(a)) for a in _ring_angles(segments)]
-        bot = [(cx + r * math.cos(a), cy - hy, cz + r * math.sin(a)) for a in _ring_angles(segments)]
+        top = [
+            (cx + r * rx_scale * math.cos(a), cy + hy, cz + r * rz_scale * math.sin(a))
+            for a in _ring_angles(segments)
+        ]
+        bot = [
+            (cx + r * rx_scale * math.cos(a), cy - hy, cz + r * rz_scale * math.sin(a))
+            for a in _ring_angles(segments)
+        ]
         center_top = (cx, cy + hy, cz)
         center_bot = (cx, cy - hy, cz)
         for i in range(segments):
@@ -174,88 +183,192 @@ def _vec_min(positions):
     return [min(p[i] for p in positions) for i in range(3)]
 
 
-def build_chibi_dog(hoodie_color: list[float], dealer: bool = False) -> FacetedMesh:
+def _chibi_base(m: FacetedMesh, hoodie: bool = True) -> None:
+    """Shared chibi body: oversized head, chunky limbs."""
+    m.add_box(0, 0.48, 0.04, 0.42, 0.38, 0.32)  # head
+    m.add_box(0, 0.38, 0.16, 0.14, 0.1, 0.1)  # snout
+    m.add_box(-0.16, 0.62, -0.04, 0.1, 0.14, 0.08)  # ear L
+    m.add_box(0.16, 0.62, -0.04, 0.1, 0.14, 0.08)  # ear R
+    m.add_box(-0.1, 0.54, 0.18, 0.05, 0.05, 0.03)  # eye L
+    m.add_box(0.1, 0.54, 0.18, 0.05, 0.05, 0.03)  # eye R
+    m.add_box(0, 0.44, 0.2, 0.05, 0.04, 0.03)  # nose
+    m.add_box(0, 0.2, 0, 0.34, 0.26, 0.24)  # torso
+    if hoodie:
+        m.add_box(0, 0.22, -0.02, 0.38, 0.3, 0.28)  # hood back
+        m.add_box(0, 0.34, -0.06, 0.36, 0.18, 0.22)  # hood top
+    m.add_box(-0.14, 0.08, 0.06, 0.11, 0.16, 0.11)  # leg L
+    m.add_box(0.14, 0.08, 0.06, 0.11, 0.16, 0.11)  # leg R
+    m.add_box(-0.22, 0.28, 0, 0.1, 0.12, 0.1)  # arm L
+    m.add_box(0.22, 0.28, 0, 0.1, 0.12, 0.1)  # arm R
+
+
+def build_dealer_dog() -> FacetedMesh:
+    """St Bernard dealer: tan/white blaze, vest + bowtie + shirt."""
     m = FacetedMesh()
-    # Chibi: oversized head, chunky body, minimal limbs
-    m.add_box(0, 0.42, 0, 0.32, 0.28, 0.22)  # head
-    m.add_box(0, 0.18, 0, 0.28, 0.22, 0.2)  # torso
-    if dealer:
-        m.add_box(0, 0.2, 0.02, 0.3, 0.24, 0.22)  # vest (dark)
-    else:
-        m.add_box(0, 0.2, 0, 0.32, 0.26, 0.24)  # hoodie
-    m.add_box(-0.12, 0.08, 0.05, 0.1, 0.14, 0.1)  # leg L
-    m.add_box(0.12, 0.08, 0.05, 0.1, 0.14, 0.1)  # leg R
-    m.add_box(-0.18, 0.28, 0, 0.08, 0.1, 0.08)  # arm L
-    m.add_box(0.18, 0.28, 0, 0.08, 0.1, 0.08)  # arm R
-    m.add_box(0, 0.38, 0.14, 0.1, 0.08, 0.08)  # snout
-    m.add_box(-0.14, 0.52, -0.02, 0.08, 0.1, 0.06)  # ear L
-    m.add_box(0.14, 0.52, -0.02, 0.08, 0.1, 0.06)  # ear R
+    # Shirt torso.
+    m.add_box(0, 0.28, -0.04, 0.34, 0.30, 0.24)
+    # Vest panels.
+    m.add_box(-0.12, 0.27, 0.0, 0.12, 0.26, 0.26)
+    m.add_box(0.12, 0.27, 0.0, 0.12, 0.26, 0.26)
+    # Bow tie + collar block.
+    m.add_box(-0.05, 0.46, 0.12, 0.06, 0.04, 0.03)
+    m.add_box(0.05, 0.46, 0.12, 0.06, 0.04, 0.03)
+    m.add_box(0, 0.46, 0.11, 0.04, 0.04, 0.03)
+    m.add_box(0, 0.44, 0.08, 0.18, 0.05, 0.06)
+    # Sleeves and paws.
+    m.add_box(-0.24, 0.20, -0.38, 0.10, 0.12, 0.32)
+    m.add_box(0.24, 0.20, -0.38, 0.10, 0.12, 0.32)
+    m.add_box(-0.24, 0.12, -0.78, 0.14, 0.06, 0.12)
+    m.add_box(0.24, 0.12, -0.78, 0.14, 0.06, 0.12)
+    # Head: tan cheeks, crown, white blaze, ears, patch, muzzle.
+    m.add_box(-0.18, 0.68, 0.04, 0.12, 0.34, 0.28)
+    m.add_box(0.18, 0.68, 0.04, 0.12, 0.34, 0.28)
+    m.add_box(0, 0.70, 0.02, 0.18, 0.32, 0.30)
+    m.add_box(0, 0.66, 0.16, 0.12, 0.34, 0.06)
+    m.add_box(-0.24, 0.76, -0.02, 0.10, 0.20, 0.06)
+    m.add_box(0.24, 0.76, -0.02, 0.10, 0.20, 0.06)
+    m.add_box(-0.10, 0.72, 0.18, 0.08, 0.08, 0.03)
+    m.add_box(0, 0.58, 0.22, 0.16, 0.12, 0.10)
+    # Face details.
+    m.add_box(-0.06, 0.72, 0.20, 0.04, 0.05, 0.02)
+    m.add_box(0.06, 0.72, 0.20, 0.04, 0.05, 0.02)
+    m.add_box(0, 0.60, 0.28, 0.06, 0.05, 0.04)
+    m.add_box(-0.04, 0.54, 0.27, 0.03, 0.02, 0.02)
+    m.add_box(0.04, 0.54, 0.27, 0.03, 0.02, 0.02)
+    return m
+
+
+def build_bear_player() -> FacetedMesh:
+    """Tan bear in blue hoodie (Ref A bottom-left player)."""
+    m = FacetedMesh()
+    _chibi_base(m, hoodie=True)
+    m.add_box(0, 0.5, 0.02, 0.08, 0.08, 0.06)  # round ear nubs
+    return m
+
+
+def build_husky_player() -> FacetedMesh:
+    """Grey husky in red hoodie (Ref A bottom-right player)."""
+    m = FacetedMesh()
+    _chibi_base(m, hoodie=True)
+    m.add_box(0, 0.52, -0.02, 0.32, 0.22, 0.24)  # dark grey head cap
+    m.add_box(0, 0.48, 0.16, 0.2, 0.16, 0.12)  # white muzzle patch
     return m
 
 
 def build_round_table() -> FacetedMesh:
+    """Oval felt top + wooden rim (Ref A)."""
     m = FacetedMesh()
-    m.add_cylinder(0, 0.03, 0, 1.35, 0.06, 10)  # felt
-    m.add_cylinder(0, 0.09, 0, 1.5, 0.12, 10)  # wooden rim
+    m.add_cylinder(0, 0.04, 0, 1.35, 0.07, 12, rx_scale=1.18, rz_scale=0.92)  # felt
+    m.add_cylinder(0, 0.1, 0, 1.52, 0.14, 12, rx_scale=1.18, rz_scale=0.92)  # rim
     return m
 
 
 def build_chip() -> FacetedMesh:
     m = FacetedMesh()
-    m.add_cylinder(0, 0.015, 0, 0.12, 0.03, 8)
+    m.add_cylinder(0, 0.015, 0, 0.12, 0.028, 8)
+    m.add_cylinder(0, 0.015, 0, 0.095, 0.032, 8)  # stripe ring
     return m
 
 
 def build_shoe() -> FacetedMesh:
     m = FacetedMesh()
-    m.add_box(0, 0.1, 0, 0.35, 0.2, 0.55)
-    m.add_box(0, 0.22, 0.05, 0.28, 0.12, 0.35)  # card stack
+    m.add_box(0, 0.1, 0, 0.38, 0.22, 0.58)
+    m.add_box(0, 0.24, 0.06, 0.3, 0.14, 0.38)  # card stack
+    m.add_box(0.14, 0.08, 0.22, 0.08, 0.06, 0.12)  # roller
     return m
 
 
 def build_lamp() -> FacetedMesh:
     m = FacetedMesh()
-    m.add_cylinder(0, 2.5, 0, 0.35, 0.15, 6)  # shade (faceted)
-    m.add_box(0, 2.35, 0, 0.08, 0.2, 0.08)  # stem
+    m.add_cylinder(0, 2.55, 0, 0.42, 0.18, 8)  # faceted shade
+    m.add_box(0, 2.38, 0, 0.06, 0.24, 0.06)  # stem
+    m.add_box(0, 2.72, 0, 0.1, 0.06, 0.1)  # ceiling mount
     return m
 
 
 def build_discard_tray() -> FacetedMesh:
     m = FacetedMesh()
-    m.add_box(0, 0.04, 0, 0.5, 0.08, 0.35)
+    m.add_box(0, 0.04, 0, 0.55, 0.08, 0.38)
+    m.add_box(0, 0.1, 0, 0.42, 0.12, 0.28)  # card stack
     return m
 
 
 def build_plant() -> FacetedMesh:
     m = FacetedMesh()
-    m.add_cylinder(0, 0.12, 0, 0.12, 0.24, 6)  # pot
-    m.add_box(0, 0.35, 0, 0.22, 0.2, 0.22)  # foliage
+    m.add_cylinder(0, 0.12, 0, 0.14, 0.26, 6)
+    m.add_box(0, 0.38, 0, 0.26, 0.24, 0.26)  # foliage
+    m.add_box(-0.08, 0.48, 0.04, 0.12, 0.14, 0.1)
+    m.add_box(0.1, 0.44, -0.04, 0.1, 0.12, 0.1)
+    return m
+
+
+def build_sideboard() -> FacetedMesh:
+    m = FacetedMesh()
+    m.add_box(0, 0.55, 0, 1.6, 1.1, 0.4)  # body
+    m.add_box(0, 1.12, 0, 1.65, 0.06, 0.42)  # top
+    m.add_box(-0.55, 0.72, 0.12, 0.35, 0.5, 0.2)  # book stack
+    m.add_box(0.15, 0.68, 0.12, 0.25, 0.4, 0.18)
+    m.add_box(0.55, 0.75, 0.12, 0.22, 0.35, 0.15)
+    return m
+
+
+def build_count_guide() -> FacetedMesh:
+    m = FacetedMesh()
+    m.add_box(0, 0.12, 0, 0.28, 0.24, 0.06)  # wooden sign board
+    m.add_box(0, 0.12, 0.04, 0.22, 0.16, 0.02)  # face
+    m.add_box(0, 0.02, 0, 0.04, 0.04, 0.04)  # stand
+    return m
+
+
+def build_lantern() -> FacetedMesh:
+    m = FacetedMesh()
+    m.add_box(0, 0.22, 0, 0.12, 0.28, 0.12)  # body
+    m.add_cylinder(0, 0.38, 0, 0.08, 0.06, 6)  # top cap
+    m.add_box(0, 0.06, 0, 0.14, 0.04, 0.14)  # base
+    return m
+
+
+def build_curtain() -> FacetedMesh:
+    m = FacetedMesh()
+    m.add_box(0, 1.0, 0, 0.5, 2.0, 0.06)
+    m.add_box(0, 2.05, 0, 0.55, 0.08, 0.1)  # rod
+    return m
+
+
+def build_hand_total_display() -> FacetedMesh:
+    """Small easel whiteboard: frame, dark face, rear kickstand."""
+    m = FacetedMesh()
+    m.add_box(0, 0.011, 0, 0.20, 0.022, 0.14)  # frame
+    m.add_box(0, 0.013, 0.002, 0.164, 0.01, 0.109)  # dark face inset
+    m.add_box(0, 0.018, -0.048, 0.144, 0.05, 0.048)  # kickstand
     return m
 
 
 def main() -> None:
     specs = [
-        ("dog_player_red.glb", lambda: build_chibi_dog([0.85, 0.35, 0.28, 1.0])),
-        ("dog_player_blue.glb", lambda: build_chibi_dog([0.28, 0.45, 0.82, 1.0])),
-        ("dog_player_green.glb", lambda: build_chibi_dog([0.32, 0.72, 0.38, 1.0])),
-        ("dog_dealer.glb", lambda: build_chibi_dog([0.92, 0.9, 0.85, 1.0], dealer=True)),
-        ("round_table.glb", lambda: build_round_table()),
-        ("chip.glb", lambda: build_chip()),
-        ("card_shoe.glb", lambda: build_shoe()),
-        ("overhead_lamp.glb", lambda: build_lamp()),
-        ("discard_tray.glb", lambda: build_discard_tray()),
-        ("potted_plant.glb", lambda: build_plant()),
+        ("dog_dealer.glb", build_dealer_dog, [0.82, 0.68, 0.52, 1.0]),
+        ("dog_player_blue.glb", build_bear_player, [0.28, 0.45, 0.82, 1.0]),
+        ("dog_player_red.glb", build_husky_player, [0.82, 0.22, 0.2, 1.0]),
+        ("dog_player_green.glb", build_bear_player, [0.32, 0.72, 0.38, 1.0]),
+        ("round_table.glb", build_round_table, [0.16, 0.42, 0.22, 1.0]),
+        ("chip.glb", build_chip, [0.82, 0.18, 0.16, 1.0]),
+        ("card_shoe.glb", build_shoe, [0.35, 0.28, 0.2, 1.0]),
+        ("overhead_lamp.glb", build_lamp, [0.92, 0.78, 0.45, 1.0]),
+        ("discard_tray.glb", build_discard_tray, [0.3, 0.3, 0.32, 1.0]),
+        ("potted_plant.glb", build_plant, [0.22, 0.48, 0.24, 1.0]),
+        ("sideboard.glb", build_sideboard, [0.45, 0.3, 0.18, 1.0]),
+        ("count_guide.glb", build_count_guide, [0.55, 0.38, 0.22, 1.0]),
+        ("lantern.glb", build_lantern, [0.85, 0.55, 0.25, 1.0]),
+        ("curtain.glb", build_curtain, [0.72, 0.18, 0.18, 1.0]),
+        ("hand_total_display.glb", build_hand_total_display, [0.32, 0.22, 0.14, 1.0]),
     ]
-    for filename, builder in specs:
+    for filename, builder, color in specs:
         mesh = builder()
-        color = [0.7, 0.7, 0.7, 1.0]
         out = OUT_DIR / filename
         mesh.to_glb(out, color, filename.replace(".glb", ""))
         print(f"  {out.name}")
     manifest = {"models": [f[0] for f in specs], "style": "ref-a-faceted-low-poly"}
-    (OUT_DIR / "models_manifest.json").write_text(
-        json.dumps(manifest, indent=2), encoding="utf-8"
-    )
+    (OUT_DIR / "models_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(f"Generated {len(specs)} glTF models in {OUT_DIR}")
 
 

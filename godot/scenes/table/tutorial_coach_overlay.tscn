@@ -5,8 +5,8 @@
 [node name="TutorialCoachOverlay" type="Control"]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 320.0
-offset_bottom = 120.0
+offset_right = 360.0
+offset_bottom = 88.0
 mouse_filter = 2
 script = ExtResource("1_coach")
 
@@ -17,9 +17,24 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_type_variation = &"panel_bubble"
 
-[node name="Message" type="Label" parent="Bubble"]
+[node name="HBox" type="HBoxContainer" parent="Bubble"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StarIcon" type="TextureRect" parent="Bubble/HBox"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Message" type="Label" parent="Bubble/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.345, 0.251, 0.149, 1)
+theme_override_font_sizes/font_size = 14
 autowrap_mode = 3
-text = "Try the highlighted action."
+text = "We'll practice counting cards as they're dealt!"
+vertical_alignment = 1

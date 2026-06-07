@@ -1,0 +1,110 @@
+{
+  "colors": {
+    "sidebar_outer": [
+      36,
+      35,
+      30
+    ],
+    "header_green": [
+      44,
+      68,
+      42
+    ],
+    "panel_cream": [
+      242,
+      221,
+      190
+    ],
+    "stat_brown": [
+      84,
+      63,
+      36
+    ],
+    "stat_border": [
+      65,
+      48,
+      28
+    ],
+    "text_cream": [
+      243,
+      222,
+      193
+    ],
+    "text_muted": [
+      216,
+      182,
+      134
+    ],
+    "text_dark": [
+      88,
+      64,
+      38
+    ],
+    "count_pos": [
+      122,
+      176,
+      80
+    ],
+    "count_neu": [
+      122,
+      110,
+      96
+    ],
+    "count_neg": [
+      198,
+      96,
+      72
+    ],
+    "badge_pos": [
+      98,
+      154,
+      72
+    ],
+    "badge_neu": [
+      122,
+      110,
+      96
+    ],
+    "badge_neg": [
+      198,
+      96,
+      72
+    ],
+    "tip_yellow": [
+      252,
+      189,
+      73
+    ],
+    "tip_green": [
+      44,
+      68,
+      42
+    ],
+    "chip_red": [
+      196,
+      58,
+      48
+    ],
+    "chip_white": [
+      245,
+      240,
+      230
+    ],
+    "deck_blue": [
+      58,
+      92,
+      168
+    ],
+    "paw_fill": [
+      233,
+      206,
+      161
+    ],
+    "help_circle": [
+      88,
+      64,
+      38
+    ]
+  },
+  "source": "ref-2d-tutorial-sidebar-ui.png"
+}

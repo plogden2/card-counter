@@ -1,0 +1,20 @@
+{
+  "models": [
+    "dog_dealer.glb",
+    "dog_player_blue.glb",
+    "dog_player_red.glb",
+    "dog_player_green.glb",
+    "round_table.glb",
+    "chip.glb",
+    "card_shoe.glb",
+    "overhead_lamp.glb",
+    "discard_tray.glb",
+    "potted_plant.glb",
+    "sideboard.glb",
+    "count_guide.glb",
+    "lantern.glb",
+    "curtain.glb",
+    "hand_total_display.glb"
+  ],
+  "style": "ref-a-faceted-low-poly"
+}

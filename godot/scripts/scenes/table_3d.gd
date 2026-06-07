@@ -1,9 +1,8 @@
 extends SubViewportContainer
 
 const MotionPreference = preload("res://scripts/lib/motion_preference.gd")
+const Hand = preload("res://scripts/domain/hand.gd")
 const FACETED_MAT = preload("res://assets/materials/faceted_mat.tres")
-const CHIP_MESH_LEGACY = preload("res://assets/models/chip_mesh.tres")
-const DOG_MESH_LEGACY = preload("res://assets/models/dog_mesh.tres")
 const DOG_MODELS := [
 	preload("res://assets/models/dog_player_red.glb"),
 	preload("res://assets/models/dog_player_blue.glb"),
@@ -12,12 +11,34 @@ const DOG_MODELS := [
 const DOG_DEALER_MODEL = preload("res://assets/models/dog_dealer.glb")
 const CHIP_MODEL = preload("res://assets/models/chip.glb")
 const SHOE_MODEL = preload("res://assets/models/card_shoe.glb")
+const ROUND_TABLE_MODEL = preload("res://assets/models/round_table.glb")
 const LAMP_MODEL = preload("res://assets/models/overhead_lamp.glb")
 const PLANT_MODEL = preload("res://assets/models/potted_plant.glb")
+const DISCARD_MODEL = preload("res://assets/models/discard_tray.glb")
+const SIDEBOARD_MODEL = preload("res://assets/models/sideboard.glb")
+const COUNT_GUIDE_MODEL = preload("res://assets/models/count_guide.glb")
+const LANTERN_MODEL = preload("res://assets/models/lantern.glb")
+const CURTAIN_MODEL = preload("res://assets/models/curtain.glb")
+const HAND_DISPLAY_MODEL = preload("res://assets/models/hand_total_display.glb")
+const UiTheme = preload("res://scripts/lib/ui_theme.gd")
+
+const SURFACE_PLAQUE_BASE := Color(0.18, 0.14, 0.11)
+const SURFACE_PLAQUE_FACE := Color(0.85, 0.78, 0.65)
+const SURFACE_TEXT_COLOR := Color(0.949, 0.91, 0.835)
+const HAND_BOARD_FRAME := Color(0.32, 0.22, 0.14)
+const HAND_BOARD_FACE := Color(0.07, 0.07, 0.08)
+const HAND_BOARD_TEXT := Color(1.0, 1.0, 1.0)
+const HAND_BOARD_SIZE := Vector3(0.24, 0.028, 0.16)
+const HAND_BOARD_TILT_DEG := 48.0
+const HAND_BOARD_FONT_SIZE := 44
+const TABLE_SURFACE_Y := 0.112
 
 const CARD_TEXTURE_DIR := "res://assets/textures/cards/"
-const CAMERA_HOME_POS := Vector3(0.0, 3.1, 3.2)
-const CAMERA_HOME_ROT := Vector3(-0.75, 0.0, 0.0)
+const ACTION_BAR_HEIGHT := 76.0
+
+const CAMERA_HOME_POS := Vector3(0.0, 3.15, 3.35)
+const CAMERA_HOME_ROT := Vector3(-0.58, 0.0, 0.0)
+const TABLE_OVAL := Vector3(1.18, 1.0, 0.88)
 const DEAL_SNAP_MS := 260
 const CHIP_BOUNCE_MS := 180
 const DOG_REACTION_MS := 240
@@ -42,21 +63,21 @@ const _SEAT_CARD_BASES := {
 	"dealer": Vector3(0.0, 0.42, -0.9),
 }
 
-const CHIP_STACK_POS := Vector3(0.0, 0.44, 0.72)
+const CHIP_STACK_POS := Vector3(-0.42, 0.125, 0.74)
 const CHIP_LAYER_HEIGHT := 0.028
 const CARD_PLANE_SIZE := Vector2(0.26, 0.38)
 
 const _DOG_BREED_DEALER := "dealer"
-const _DOG_BREED_SHIBA := "shiba"
+const _DOG_BREED_BEAR := "bear"
 const _DOG_BREED_HUSKY := "husky"
 const _DOG_BREED_GENERIC := "generic"
 
 const _DOG_SEAT_SLOTS := [
-	{"breed": _DOG_BREED_DEALER, "pos": Vector3(0.0, 0.0, -2.2), "rot_y": 0.0},
-	{"breed": _DOG_BREED_SHIBA, "pos": Vector3(-1.55, 0.0, 1.35), "rot_y": -0.4},
-	{"breed": _DOG_BREED_HUSKY, "pos": Vector3(1.55, 0.0, 1.35), "rot_y": 0.4},
-	{"breed": _DOG_BREED_GENERIC, "pos": Vector3(-0.75, 0.0, 1.75), "rot_y": -0.15},
-	{"breed": _DOG_BREED_GENERIC, "pos": Vector3(0.75, 0.0, 1.75), "rot_y": 0.15},
+	{"breed": _DOG_BREED_DEALER, "pos": Vector3(0.0, 0.02, -1.72), "rot_y": 0.0},
+	{"breed": _DOG_BREED_BEAR, "pos": Vector3(-1.42, 0.02, 1.18), "rot_y": -0.38},
+	{"breed": _DOG_BREED_HUSKY, "pos": Vector3(1.42, 0.02, 1.18), "rot_y": 0.38},
+	{"breed": _DOG_BREED_GENERIC, "pos": Vector3(-0.72, 0.02, 1.52), "rot_y": -0.12},
+	{"breed": _DOG_BREED_GENERIC, "pos": Vector3(0.72, 0.02, 1.52), "rot_y": 0.12},
 ]
 
 @onready var _subviewport: SubViewport = $SubViewport
@@ -68,7 +89,7 @@ const _DOG_SEAT_SLOTS := [
 @onready var _card_root: Node3D = %CardRoot
 @onready var _seat_root: Node3D = %SeatRoot
 @onready var _seat_areas: Node3D = %SeatAreas
-@onready var _shoe_label: Label3D = %ShoeLabel
+@onready var _shoe_label: Label3D = get_node_or_null("%ShoeLabel")
 @onready var _room_root: Node3D = %RoomRoot
 @onready var _world: Node3D = get_node_or_null("SubViewport/World")
 
@@ -90,19 +111,37 @@ var _outcome_cue_node: MeshInstance3D = null
 var _active_tweens := 0
 var _last_dog_reaction := ""
 var _idle_tweens: Array[Tween] = []
+var _hand_total_labels: Dictionary = {}
+var _room_prop_nodes: Array[Node3D] = []
 
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_ensure_runtime_nodes()
 	_apply_generated_model_meshes()
+	_ensure_felt_labels()
 	_apply_faceted_materials()
+	_attach_shoe_label()
 	_bind_seat_areas()
 	_ensure_chip_stack_root()
 	_ensure_outcome_cue_node()
 	_spawn_table_dogs(2)
 	_start_dog_idle_loops()
+	_sync_subviewport_size()
 	set_process(true)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED:
+		_sync_subviewport_size()
+
+
+func _sync_subviewport_size() -> void:
+	if _subviewport == null:
+		return
+	var target := Vector2i(maxi(1, int(size.x)), maxi(1, int(size.y)))
+	if _subviewport.size != target:
+		_subviewport.size = target
 
 
 func get_card_count() -> int:
@@ -144,8 +183,37 @@ func set_dog_count(count: int) -> void:
 
 func set_shoe_remaining(count: int) -> void:
 	_shoe_remaining = count
+	_ensure_shoe_count_display()
 	if _shoe_label:
 		_shoe_label.text = "%d" % count
+		var display_root := _shoe_label.get_parent()
+		if display_root:
+			display_root.visible = count > 0
+
+
+func _ensure_shoe_count_display() -> void:
+	if _shoe == null:
+		return
+	var display: Node3D = _shoe.get_node_or_null("ShoeCountDisplay")
+	if display != null:
+		_shoe_label = display.get_node_or_null("Value") as Label3D
+		return
+	var legacy := _world.get_node_or_null("ShoeLabel") if _world else null
+	if legacy != null:
+		legacy.queue_free()
+	if _shoe_label != null and _shoe_label.get_parent() != _shoe:
+		_shoe_label.queue_free()
+		_shoe_label = null
+	display = _build_surface_number_node(Vector3(0.14, 0.006, 0.1), 16, false)
+	display.name = "ShoeCountDisplay"
+	display.position = Vector3(0.0, 0.3, 0.04)
+	display.rotation_degrees = Vector3(-52, 0, 0)
+	_shoe.add_child(display)
+	_shoe_label = display.get_node("Value") as Label3D
+
+
+func _attach_shoe_label() -> void:
+	_ensure_shoe_count_display()
 
 
 func sync_presentation(view: Dictionary, motion_reduced: bool = false) -> void:
@@ -171,6 +239,7 @@ func sync_presentation(view: Dictionary, motion_reduced: bool = false) -> void:
 			other_index += 1
 
 	set_dog_count(other_players)
+	_update_hand_totals(seats)
 
 
 func focus_seat(seat_id: String, focused: bool) -> void:
@@ -286,9 +355,17 @@ func _place_seat_cards(seat_view: Dictionary, base_pos: Vector3, motion_reduced:
 
 
 func _apply_generated_model_meshes() -> void:
+	if _table != null:
+		_table.visible = true
+		_table.scale = TABLE_OVAL
+	if _table_rim != null:
+		_table_rim.scale = TABLE_OVAL
 	var shoe_mesh: Mesh = _mesh_from_glb(SHOE_MODEL)
 	if shoe_mesh != null and _shoe != null:
 		_shoe.mesh = shoe_mesh
+	var tray_mesh: Mesh = _mesh_from_glb(DISCARD_MODEL)
+	if tray_mesh != null and _discard_tray != null:
+		_discard_tray.mesh = tray_mesh
 	var lamp_mesh: Mesh = _mesh_from_glb(LAMP_MODEL)
 	if lamp_mesh != null and _room_root != null:
 		var lamp_shade: MeshInstance3D = _room_root.get_node_or_null("LampMesh/LampShade")
@@ -302,6 +379,269 @@ func _apply_generated_model_meshes() -> void:
 				var pot: MeshInstance3D = plant.get_node_or_null("Pot")
 				if pot:
 					pot.mesh = plant_mesh
+				var leaves: MeshInstance3D = plant.get_node_or_null("PlantLeaves")
+				if leaves and plant_mesh != null:
+					leaves.mesh = plant_mesh
+
+
+func _spawn_room_props() -> void:
+	pass
+
+
+func _ensure_felt_labels() -> void:
+	if _world == null or _world.get_node_or_null("FeltLabels") != null:
+		return
+	var root := Node3D.new()
+	root.name = "FeltLabels"
+	_world.add_child(root)
+	var lines := ["BLACKJACK", "DEALER MUST HIT SOFT 17", "INSURANCE PAYS 2 TO 1"]
+	for i in lines.size():
+		var anchor := _build_felt_text_marker(lines[i], 24)
+		anchor.position = Vector3(0.0, TABLE_SURFACE_Y, -0.22 + float(i) * 0.16)
+		root.add_child(anchor)
+
+
+func _build_felt_text_marker(text: String, font_size: int) -> Node3D:
+	var anchor := Node3D.new()
+	var plaque := _build_number_plaque(Vector3(1.6, 0.004, 0.14))
+	plaque.name = "Plaque"
+	anchor.add_child(plaque)
+	var lbl := Label3D.new()
+	lbl.name = "Text"
+	lbl.text = text
+	lbl.font_size = font_size
+	lbl.billboard = BaseMaterial3D.BILLBOARD_DISABLED
+	lbl.modulate = Color(0.86, 0.72, 0.28)
+	lbl.position = Vector3(0.0, 0.004, 0.0)
+	lbl.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	anchor.add_child(lbl)
+	return anchor
+
+
+func _build_hand_total_board() -> Node3D:
+	var root := Node3D.new()
+	var plaque := _build_hand_total_plaque()
+	plaque.name = "Plaque"
+	root.add_child(plaque)
+	var face := plaque.get_node_or_null("Face") as MeshInstance3D
+	if face == null:
+		return root
+	var face_mesh := face.mesh as BoxMesh
+	var face_size := face_mesh.size if face_mesh != null else Vector3(0.18, 0.012, 0.12)
+	var lbl := _make_hand_total_label(face_size)
+	face.add_child(lbl)
+	return root
+
+
+func _make_hand_total_label(face_size: Vector3) -> Label3D:
+	var lbl := Label3D.new()
+	lbl.name = "Value"
+	var font := UiTheme.get_heavy_font()
+	if font != null:
+		lbl.font = font
+	lbl.font_size = HAND_BOARD_FONT_SIZE
+	lbl.billboard = BaseMaterial3D.BILLBOARD_DISABLED
+	lbl.modulate = HAND_BOARD_TEXT
+	lbl.outline_size = 10
+	lbl.outline_modulate = Color(0.04, 0.04, 0.05, 0.9)
+	lbl.render_priority = 8
+	lbl.no_depth_test = true
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.position = Vector3(0.0, face_size.y * 0.5 + 0.003, 0.0)
+	lbl.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+	return lbl
+
+
+func _build_hand_total_plaque() -> Node3D:
+	var root := Node3D.new()
+	var glb_mesh: Mesh = _mesh_from_glb(HAND_DISPLAY_MODEL)
+	if glb_mesh != null:
+		var body := MeshInstance3D.new()
+		body.mesh = glb_mesh
+		body.scale = Vector3(
+			HAND_BOARD_SIZE.x / 0.20,
+			HAND_BOARD_SIZE.y / 0.05,
+			HAND_BOARD_SIZE.z / 0.14,
+		)
+		_paint_mesh(body, HAND_BOARD_FRAME)
+		root.add_child(body)
+	else:
+		var frame := MeshInstance3D.new()
+		frame.mesh = BoxMesh.new()
+		(frame.mesh as BoxMesh).size = HAND_BOARD_SIZE
+		_paint_mesh(frame, HAND_BOARD_FRAME)
+		root.add_child(frame)
+	var face := MeshInstance3D.new()
+	face.name = "Face"
+	var face_mesh := BoxMesh.new()
+	face_mesh.size = Vector3(
+		HAND_BOARD_SIZE.x * 0.82,
+		maxf(HAND_BOARD_SIZE.y * 0.45, 0.002),
+		HAND_BOARD_SIZE.z * 0.78
+	)
+	face.mesh = face_mesh
+	face.position = Vector3(0.0, HAND_BOARD_SIZE.y * 0.52, 0.0)
+	_paint_mesh(face, HAND_BOARD_FACE)
+	root.add_child(face)
+	var stand := MeshInstance3D.new()
+	stand.name = "Stand"
+	var stand_mesh := BoxMesh.new()
+	stand_mesh.size = Vector3(HAND_BOARD_SIZE.x * 0.72, 0.05, HAND_BOARD_SIZE.z * 0.34)
+	stand.mesh = stand_mesh
+	stand.position = Vector3(0.0, 0.018, -HAND_BOARD_SIZE.z * 0.34)
+	stand.rotation_degrees = Vector3(-24.0, 0.0, 0.0)
+	_paint_mesh(stand, HAND_BOARD_FRAME.darkened(0.08))
+	root.add_child(stand)
+	return root
+
+
+func _build_surface_number_node(plaque_size: Vector3, font_size: int, flat_on_table: bool) -> Node3D:
+	var root := Node3D.new()
+	var plaque := _build_number_plaque(plaque_size)
+	plaque.name = "Plaque"
+	root.add_child(plaque)
+	var lbl := Label3D.new()
+	lbl.name = "Value"
+	lbl.font_size = font_size
+	lbl.billboard = BaseMaterial3D.BILLBOARD_DISABLED
+	lbl.modulate = SURFACE_TEXT_COLOR
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.position = Vector3(0.0, plaque_size.y * 0.5 + 0.001, 0.0)
+	if flat_on_table:
+		lbl.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+	else:
+		lbl.rotation_degrees = Vector3(-72.0, 0.0, 0.0)
+	root.add_child(lbl)
+	return root
+
+
+func _build_number_plaque(size: Vector3) -> MeshInstance3D:
+	var plaque := MeshInstance3D.new()
+	var glb_mesh: Mesh = _mesh_from_glb(HAND_DISPLAY_MODEL)
+	if glb_mesh != null:
+		plaque.mesh = glb_mesh
+		plaque.scale = Vector3(
+			size.x / 0.18,
+			size.y / 0.12,
+			size.z / 0.04,
+		)
+	else:
+		var mesh := BoxMesh.new()
+		mesh.size = size
+		plaque.mesh = mesh
+	_paint_mesh(plaque, SURFACE_PLAQUE_BASE)
+	var face := MeshInstance3D.new()
+	face.name = "Face"
+	var face_mesh := BoxMesh.new()
+	face_mesh.size = Vector3(size.x * 0.82, maxf(size.y * 0.35, 0.002), size.z * 0.72)
+	face.mesh = face_mesh
+	face.position = Vector3(0.0, size.y * 0.45, 0.0)
+	_paint_mesh(face, SURFACE_PLAQUE_FACE)
+	plaque.add_child(face)
+	return plaque
+
+
+func _update_hand_totals(seats: Array) -> void:
+	for seat_view in seats:
+		var seat_id := str(seat_view.get("seatId", ""))
+		if seat_id == "":
+			continue
+		var cards: Array = seat_view.get("cards", [])
+		var total := 0
+		var hide_board := false
+		if not cards.is_empty():
+			var raw_cards: Array = []
+			for card_data in cards:
+				if bool(card_data.get("faceUp", true)):
+					raw_cards.append({"rank": card_data.get("rank", 0)})
+				elif seat_id == "dealer":
+					hide_board = true
+			if not raw_cards.is_empty() and not hide_board:
+				total = int(Hand.hand_value(raw_cards)["total"])
+		_ensure_hand_total_label(seat_id, total)
+
+
+func _ensure_hand_total_label(seat_id: String, total: int) -> void:
+	if _world == null:
+		return
+	if not _hand_total_labels.has(seat_id):
+		var display := _build_hand_total_board()
+		display.name = "HandTotal_%s" % seat_id
+		_world.add_child(display)
+		_hand_total_labels[seat_id] = display
+	elif _hand_total_labels[seat_id].get_node_or_null("Plaque") == null:
+		_hand_total_labels[seat_id].queue_free()
+		_hand_total_labels.erase(seat_id)
+		_ensure_hand_total_label(seat_id, total)
+		return
+	var anchor_node: Node3D = _hand_total_labels[seat_id]
+	_attach_hand_total_board(anchor_node, seat_id)
+	anchor_node.visible = total > 0
+	var value_lbl: Label3D = anchor_node.get_node_or_null("Plaque/Face/Value")
+	if value_lbl:
+		value_lbl.text = str(total) if total > 0 else ""
+
+
+func _attach_hand_total_board(board: Node3D, seat_id: String) -> void:
+	var parent: Node3D = _world
+	if _seat_card_groups.has(seat_id):
+		parent = _seat_card_groups[seat_id]
+	if board.get_parent() != parent:
+		if board.get_parent() != null:
+			board.reparent(parent)
+		else:
+			parent.add_child(board)
+	board.position = _hand_total_local_offset(seat_id)
+	board.rotation_degrees = Vector3(-HAND_BOARD_TILT_DEG, _hand_total_yaw_deg(seat_id), 0.0)
+
+
+func _hand_total_local_offset(seat_id: String) -> Vector3:
+	var card_y := 0.42
+	if _seat_card_groups.has(seat_id):
+		card_y = _seat_card_groups[seat_id].position.y
+	var xz := _hand_total_board_offset(seat_id)
+	return Vector3(xz.x, TABLE_SURFACE_Y - card_y + 0.004, xz.z)
+
+
+func _hand_total_board_offset(seat_id: String) -> Vector3:
+	match seat_id:
+		"dealer":
+			return Vector3(0.24, 0.0, 0.12)
+		"learner":
+			return Vector3(0.24, 0.0, 0.14)
+		_:
+			if _seat_card_groups.has(seat_id):
+				var base_x: float = _seat_card_groups[seat_id].position.x
+				if base_x < -0.5:
+					return Vector3(0.20, 0.0, 0.12)
+				if base_x > 0.5:
+					return Vector3(-0.20, 0.0, 0.12)
+			return Vector3(0.20, 0.0, 0.12)
+
+
+func _hand_total_yaw_deg(seat_id: String) -> float:
+	match seat_id:
+		"dealer":
+			return 180.0
+		_:
+			if _seat_card_groups.has(seat_id):
+				var base_x: float = _seat_card_groups[seat_id].position.x
+				if base_x < -0.5:
+					return -18.0
+				if base_x > 0.5:
+					return 18.0
+			return 0.0
+
+
+func _paint_node_meshes(node: Node, color: Color) -> void:
+	if node is MeshInstance3D:
+		_paint_mesh(node, color)
+	for child in node.get_children():
+		_paint_node_meshes(child, color)
 
 
 func _mesh_from_glb(glb: PackedScene) -> Mesh:
@@ -324,15 +664,32 @@ func _find_mesh_in_node(node: Node) -> Mesh:
 
 
 func _apply_faceted_materials() -> void:
-	_paint_mesh(_table, Color(0.16, 0.42, 0.22))
-	_paint_mesh(_table_rim, Color(0.45, 0.3, 0.18))
-	_paint_mesh(_shoe, Color(0.35, 0.28, 0.2))
-	_paint_mesh(_discard_tray, Color(0.3, 0.3, 0.32))
+	_paint_mesh(_table, Color(0.12, 0.48, 0.24))
+	_paint_mesh(_table_rim, Color(0.52, 0.34, 0.18))
+	_paint_mesh(_shoe, Color(0.42, 0.32, 0.22))
+	_paint_mesh(_discard_tray, Color(0.38, 0.28, 0.2))
+	_paint_static_chips()
 	_paint_world_props()
 
 	if _room_root:
 		for child in _room_root.get_children():
 			_paint_room_node(child)
+
+
+func _paint_static_chips() -> void:
+	var parent := _table.get_parent() if _table else null
+	if parent == null:
+		return
+	var chip_colors := [
+		Color(0.82, 0.18, 0.16),
+		Color(0.22, 0.62, 0.32),
+		Color(0.52, 0.28, 0.72),
+	]
+	var idx := 0
+	for child in parent.get_children():
+		if str(child.name).begins_with("ChipStack"):
+			_paint_mesh(child, chip_colors[idx % chip_colors.size()])
+			idx += 1
 
 
 func _paint_world_props() -> void:
@@ -349,10 +706,14 @@ func _paint_world_props() -> void:
 func _paint_room_node(node: Node) -> void:
 	if node is MeshInstance3D:
 		var color := Color(0.42, 0.3, 0.2)
-		if node.name.contains("Wall"):
-			color = Color(0.28, 0.22, 0.18)
+		if node.name.contains("BackWall"):
+			color = Color(0.14, 0.32, 0.18)
+		elif node.name.contains("Wall"):
+			color = Color(0.16, 0.34, 0.2)
+		elif node.name.contains("Wainscot"):
+			color = Color(0.38, 0.26, 0.16)
 		elif node.name.contains("Floor"):
-			color = Color(0.2, 0.16, 0.12)
+			color = Color(0.42, 0.3, 0.2)
 		elif node.name.contains("Lamp") or _is_lamp_child(node):
 			color = Color(0.92, 0.78, 0.45)
 		elif node.name.contains("Plant"):
@@ -560,10 +921,7 @@ func _ensure_runtime_nodes() -> void:
 	_card_root.name = "CardRoot"
 	_card_root.unique_name_in_owner = true
 	_world.add_child(_card_root)
-	_shoe_label = Label3D.new()
-	_shoe_label.name = "ShoeLabel"
-	_shoe_label.unique_name_in_owner = true
-	_world.add_child(_shoe_label)
+	_shoe_label = null
 
 
 func _ensure_chip_stack_root() -> void:
@@ -584,13 +942,22 @@ func _chips_for_wager(wager: int) -> int:
 func _make_chip_mesh(stack_index: int) -> MeshInstance3D:
 	var chip := MeshInstance3D.new()
 	chip.name = "Chip%d" % stack_index
-	var mesh := CylinderMesh.new()
-	mesh.top_radius = 0.1
-	mesh.bottom_radius = 0.1
-	mesh.height = CHIP_LAYER_HEIGHT
-	chip.mesh = mesh
-	var stripe := stack_index % 2 == 0
-	_paint_mesh(chip, Color(0.82, 0.18, 0.16) if stripe else Color(0.96, 0.9, 0.78))
+	var glb_mesh: Mesh = _mesh_from_glb(CHIP_MODEL)
+	if glb_mesh != null:
+		chip.mesh = glb_mesh
+	else:
+		var mesh := CylinderMesh.new()
+		mesh.top_radius = 0.1
+		mesh.bottom_radius = 0.1
+		mesh.height = CHIP_LAYER_HEIGHT
+		chip.mesh = mesh
+	var chip_colors := [
+		Color(0.82, 0.18, 0.16),
+		Color(0.22, 0.62, 0.32),
+		Color(0.52, 0.28, 0.72),
+		Color(0.22, 0.42, 0.82),
+	]
+	_paint_mesh(chip, chip_colors[stack_index % chip_colors.size()])
 	chip.position = Vector3(0.0, float(stack_index) * CHIP_LAYER_HEIGHT, 0.0)
 	return chip
 
@@ -647,7 +1014,11 @@ func _spawn_table_dogs(other_player_count: int) -> void:
 		player_slots.append(slot)
 	player_slots = player_slots.slice(0, other_player_count)
 
-	var slots_to_spawn: Array = [{"breed": _DOG_BREED_DEALER, "pos": _DOG_SEAT_SLOTS[0]["pos"], "rot_y": _DOG_SEAT_SLOTS[0]["rot_y"]}]
+	var slots_to_spawn: Array = [{
+		"breed": _DOG_BREED_DEALER,
+		"pos": _DOG_SEAT_SLOTS[0]["pos"],
+		"rot_y": _DOG_SEAT_SLOTS[0]["rot_y"],
+	}]
 	slots_to_spawn.append_array(player_slots)
 
 	for i in slots_to_spawn.size():
@@ -660,14 +1031,15 @@ func _spawn_table_dogs(other_player_count: int) -> void:
 		var torso := _build_breed_dog(anchor, str(slot["breed"]), i)
 		_seat_root.add_child(anchor)
 		_dog_nodes.append(anchor)
-		_dog_bodies.append(torso)
+		if torso != null:
+			_dog_bodies.append(torso)
 
 
 func _build_breed_dog(parent: Node3D, breed: String, variant: int) -> MeshInstance3D:
 	match breed:
 		_DOG_BREED_DEALER:
 			return _build_dealer_dog(parent)
-		_DOG_BREED_SHIBA:
+		_DOG_BREED_BEAR:
 			return _build_hoodie_dog(parent, Color(0.22, 0.48, 0.82), Color(0.82, 0.62, 0.38))
 		_DOG_BREED_HUSKY:
 			return _build_husky_dog(parent, Color(0.82, 0.2, 0.18))
@@ -675,65 +1047,103 @@ func _build_breed_dog(parent: Node3D, breed: String, variant: int) -> MeshInstan
 			var hoodies := [
 				Color(0.28, 0.68, 0.32),
 				Color(0.72, 0.48, 0.22),
-				Color(0.58, 0.32, 0.72),
 			]
 			return _build_hoodie_dog(parent, hoodies[variant % hoodies.size()], Color(0.78, 0.66, 0.5))
 
 
 func _build_dealer_dog(parent: Node3D) -> MeshInstance3D:
-	var white := Color(0.94, 0.92, 0.88)
-	var brown := Color(0.55, 0.34, 0.2)
-	var black := Color(0.1, 0.08, 0.08)
-	var torso := _add_dog_box(parent, Vector3(0.0, 0.24, 0.0), Vector3(0.36, 0.3, 0.26), white)
-	_add_dog_box(parent, Vector3(0.0, 0.24, 0.02), Vector3(0.34, 0.28, 0.28), Color(0.14, 0.12, 0.12))  # vest
-	_add_dog_box(parent, Vector3(0.0, 0.38, 0.08), Vector3(0.12, 0.06, 0.04), black)  # bowtie
-	_add_dog_box(parent, Vector3(0.0, 0.5, 0.02), Vector3(0.4, 0.36, 0.3), white)  # head
-	_add_dog_box(parent, Vector3(0.0, 0.52, 0.06), Vector3(0.28, 0.22, 0.18), white)  # muzzle
-	_add_dog_box(parent, Vector3(-0.18, 0.62, -0.02), Vector3(0.12, 0.16, 0.08), brown)
-	_add_dog_box(parent, Vector3(0.18, 0.62, -0.02), Vector3(0.12, 0.16, 0.08), brown)
-	_add_dog_box(parent, Vector3(0.0, 0.48, 0.18), Vector3(0.1, 0.08, 0.08), brown)  # snout
-	_add_dog_eyes(parent, Vector3(0.0, 0.56, 0.14))
-	_add_dog_box(parent, Vector3(-0.14, 0.1, 0.06), Vector3(0.1, 0.14, 0.1), white)
-	_add_dog_box(parent, Vector3(0.14, 0.1, 0.06), Vector3(0.1, 0.14, 0.1), white)
+	# Dealer anchor rotates PI so the camera-facing side is local -Z.
+	var front := -1.0
+	var tan := Color(0.82, 0.68, 0.52)
+	var tan_dark := Color(0.48, 0.32, 0.20)
+	var white := Color(0.96, 0.94, 0.90)
+	var black := Color(0.06, 0.05, 0.05)
+	var grey := Color(0.52, 0.52, 0.50)
+	var bow_red := Color(0.82, 0.14, 0.12)
+
+	var torso := _add_dog_box(parent, Vector3(0.0, 0.28, 0.04), Vector3(0.34, 0.30, 0.24), white)
+
+	# Black vest panels + open white shirt front.
+	_add_dog_box(parent, Vector3(-0.12, 0.27, 0.0), Vector3(0.12, 0.26, 0.26), black)
+	_add_dog_box(parent, Vector3(0.12, 0.27, 0.0), Vector3(0.12, 0.26, 0.26), black)
+	_add_dog_box(parent, Vector3(0.0, 0.30, front * 0.13), Vector3(0.08, 0.22, 0.02), white)
+
+	# Shirt buttons down the placket.
+	for i in range(3):
+		var button_y := 0.38 - float(i) * 0.06
+		_add_dog_box(parent, Vector3(0.0, button_y, front * 0.14), Vector3(0.04, 0.04, 0.02), grey)
+
+	# Collar tips and bow tie (camera side).
+	var collar_l := _add_dog_box(parent, Vector3(-0.10, 0.44, front * 0.10), Vector3(0.08, 0.05, 0.06), white)
+	collar_l.rotation.z = 0.35
+	var collar_r := _add_dog_box(parent, Vector3(0.10, 0.44, front * 0.10), Vector3(0.08, 0.05, 0.06), white)
+	collar_r.rotation.z = -0.35
+	_add_dog_box(parent, Vector3(-0.06, 0.46, front * 0.15), Vector3(0.07, 0.05, 0.04), bow_red)
+	_add_dog_box(parent, Vector3(0.06, 0.46, front * 0.15), Vector3(0.07, 0.05, 0.04), bow_red)
+	_add_dog_box(parent, Vector3(0.0, 0.46, front * 0.14), Vector3(0.04, 0.04, 0.04), bow_red)
+
+	# Continuous arms: shoulder → upper arm → forearm → paw (overlapping segments).
+	for side_x in [-1.0, 1.0]:
+		_add_dog_box(parent, Vector3(side_x * 0.17, 0.30, -0.04), Vector3(0.07, 0.12, 0.16), white)
+		_add_dog_box(parent, Vector3(side_x * 0.18, 0.24, -0.20), Vector3(0.08, 0.11, 0.28), white)
+		_add_dog_box(parent, Vector3(side_x * 0.19, 0.17, -0.44), Vector3(0.09, 0.10, 0.30), white)
+		_add_dog_box(parent, Vector3(side_x * 0.19, 0.11, -0.66), Vector3(0.13, 0.05, 0.12), tan)
+
+	# Solid St Bernard head — one core block plus overlays (no gaps between slices).
+	_add_dog_box(parent, Vector3(0.0, 0.68, 0.0), Vector3(0.42, 0.38, 0.32), tan)
+	_add_dog_box(parent, Vector3(0.0, 0.84, 0.0), Vector3(0.36, 0.06, 0.28), tan)
+	_add_dog_box(parent, Vector3(0.0, 0.68, 0.12), Vector3(0.38, 0.34, 0.08), tan)
+	_add_dog_box(parent, Vector3(0.0, 0.50, 0.02), Vector3(0.24, 0.10, 0.22), white)
+	_add_dog_box(parent, Vector3(0.0, 0.67, front * 0.15), Vector3(0.14, 0.32, 0.05), white)
+	_add_dog_box(parent, Vector3(-0.17, 0.67, front * 0.06), Vector3(0.10, 0.28, 0.20), tan.darkened(0.04))
+	_add_dog_box(parent, Vector3(0.17, 0.67, front * 0.06), Vector3(0.10, 0.28, 0.20), tan.darkened(0.04))
+	_add_dog_box(parent, Vector3(-0.24, 0.76, 0.02), Vector3(0.10, 0.20, 0.06), tan_dark)
+	_add_dog_box(parent, Vector3(0.24, 0.76, 0.02), Vector3(0.10, 0.20, 0.06), tan_dark)
+	_add_dog_box(parent, Vector3(-0.10, 0.72, front * 0.19), Vector3(0.09, 0.09, 0.04), tan_dark)
+
+	# Muzzle and facial features on the camera-facing side.
+	_add_dog_box(parent, Vector3(0.0, 0.58, front * 0.22), Vector3(0.17, 0.14, 0.11), white)
+	_add_dog_box(parent, Vector3(0.0, 0.62, front * 0.18), Vector3(0.12, 0.08, 0.06), tan)
+	_add_dog_box(parent, Vector3(-0.06, 0.72, front * 0.22), Vector3(0.05, 0.06, 0.03), black)
+	_add_dog_box(parent, Vector3(0.06, 0.72, front * 0.22), Vector3(0.05, 0.06, 0.03), black)
+	_add_dog_box(parent, Vector3(0.0, 0.60, front * 0.30), Vector3(0.07, 0.06, 0.05), black)
+	_add_dog_box(parent, Vector3(-0.04, 0.54, front * 0.29), Vector3(0.035, 0.025, 0.025), black)
+	_add_dog_box(parent, Vector3(0.04, 0.54, front * 0.29), Vector3(0.035, 0.025, 0.025), black)
 	return torso
 
 
 func _build_hoodie_dog(parent: Node3D, hoodie: Color, fur: Color) -> MeshInstance3D:
-	var torso := _add_dog_box(parent, Vector3(0.0, 0.22, 0.0), Vector3(0.36, 0.28, 0.28), hoodie)
-	_add_dog_box(parent, Vector3(0.0, 0.24, -0.02), Vector3(0.4, 0.32, 0.32), hoodie.lightened(0.06))  # hood
-	_add_dog_box(parent, Vector3(0.0, 0.5, 0.02), Vector3(0.38, 0.34, 0.3), fur)
-	_add_dog_box(parent, Vector3(0.0, 0.48, 0.18), Vector3(0.12, 0.1, 0.1), fur.lightened(0.08))
-	_add_dog_box(parent, Vector3(-0.17, 0.62, -0.04), Vector3(0.1, 0.14, 0.08), fur.darkened(0.12))
-	_add_dog_box(parent, Vector3(0.17, 0.62, -0.04), Vector3(0.1, 0.14, 0.08), fur.darkened(0.12))
-	_add_dog_eyes(parent, Vector3(0.0, 0.54, 0.14))
-	_add_dog_box(parent, Vector3(0.0, 0.44, 0.2), Vector3(0.06, 0.05, 0.04), Color(0.08, 0.06, 0.05))
-	_add_dog_box(parent, Vector3(-0.14, 0.08, 0.06), Vector3(0.1, 0.15, 0.11), hoodie.darkened(0.15))
-	_add_dog_box(parent, Vector3(0.14, 0.08, 0.06), Vector3(0.1, 0.15, 0.11), hoodie.darkened(0.15))
-	_add_dog_box(parent, Vector3(-0.2, 0.28, 0.0), Vector3(0.1, 0.12, 0.1), hoodie)
-	_add_dog_box(parent, Vector3(0.2, 0.28, 0.0), Vector3(0.1, 0.12, 0.1), hoodie)
+	var torso := _add_dog_box(parent, Vector3(0.0, 0.3, 0.0), Vector3(0.4, 0.32, 0.3), hoodie)
+	_add_dog_box(parent, Vector3(0.0, 0.34, -0.04), Vector3(0.44, 0.36, 0.34), hoodie.lightened(0.05))
+	_add_dog_box(parent, Vector3(0.0, 0.68, 0.02), Vector3(0.44, 0.4, 0.34), fur)
+	_add_dog_box(parent, Vector3(0.0, 0.64, 0.2), Vector3(0.16, 0.12, 0.12), fur.lightened(0.1))
+	_add_dog_box(parent, Vector3(-0.2, 0.84, -0.04), Vector3(0.12, 0.16, 0.1), fur.darkened(0.1))
+	_add_dog_box(parent, Vector3(0.2, 0.84, -0.04), Vector3(0.12, 0.16, 0.1), fur.darkened(0.1))
+	_add_dog_eyes(parent, Vector3(0.0, 0.72, 0.18))
+	_add_dog_box(parent, Vector3(-0.18, 0.12, 0.08), Vector3(0.12, 0.18, 0.12), hoodie.darkened(0.12))
+	_add_dog_box(parent, Vector3(0.18, 0.12, 0.08), Vector3(0.12, 0.18, 0.12), hoodie.darkened(0.12))
 	return torso
 
 
 func _build_husky_dog(parent: Node3D, hoodie: Color) -> MeshInstance3D:
 	var white := Color(0.92, 0.9, 0.88)
 	var black := Color(0.12, 0.12, 0.14)
-	var torso := _add_dog_box(parent, Vector3(0.0, 0.22, 0.0), Vector3(0.36, 0.28, 0.28), hoodie)
-	_add_dog_box(parent, Vector3(0.0, 0.24, -0.02), Vector3(0.4, 0.32, 0.32), hoodie.lightened(0.05))
-	_add_dog_box(parent, Vector3(0.0, 0.52, 0.0), Vector3(0.36, 0.28, 0.28), black)
-	_add_dog_box(parent, Vector3(0.0, 0.5, 0.14), Vector3(0.22, 0.2, 0.14), white)
-	_add_dog_box(parent, Vector3(-0.17, 0.62, -0.04), Vector3(0.1, 0.14, 0.08), black)
-	_add_dog_box(parent, Vector3(0.17, 0.62, -0.04), Vector3(0.1, 0.14, 0.08), black)
-	_add_dog_eyes(parent, Vector3(0.0, 0.54, 0.14))
-	_add_dog_box(parent, Vector3(0.0, 0.44, 0.2), Vector3(0.06, 0.05, 0.04), black)
-	_add_dog_box(parent, Vector3(-0.14, 0.08, 0.06), Vector3(0.1, 0.15, 0.11), hoodie.darkened(0.15))
-	_add_dog_box(parent, Vector3(0.14, 0.08, 0.06), Vector3(0.1, 0.15, 0.11), hoodie.darkened(0.15))
+	var torso := _add_dog_box(parent, Vector3(0.0, 0.3, 0.0), Vector3(0.4, 0.32, 0.3), hoodie)
+	_add_dog_box(parent, Vector3(0.0, 0.34, -0.04), Vector3(0.44, 0.36, 0.34), hoodie.lightened(0.04))
+	_add_dog_box(parent, Vector3(0.0, 0.72, 0.0), Vector3(0.4, 0.32, 0.32), black)
+	_add_dog_box(parent, Vector3(0.0, 0.66, 0.18), Vector3(0.24, 0.2, 0.14), white)
+	_add_dog_box(parent, Vector3(-0.2, 0.84, -0.04), Vector3(0.12, 0.16, 0.1), black)
+	_add_dog_box(parent, Vector3(0.2, 0.84, -0.04), Vector3(0.12, 0.16, 0.1), black)
+	_add_dog_eyes(parent, Vector3(0.0, 0.72, 0.18))
+	_add_dog_box(parent, Vector3(-0.18, 0.12, 0.08), Vector3(0.12, 0.18, 0.12), hoodie.darkened(0.12))
+	_add_dog_box(parent, Vector3(0.18, 0.12, 0.08), Vector3(0.12, 0.18, 0.12), hoodie.darkened(0.12))
 	return torso
 
 
 func _add_dog_eyes(parent: Node3D, center: Vector3) -> void:
 	var black := Color(0.05, 0.05, 0.05)
-	_add_dog_box(parent, center + Vector3(-0.08, 0.04, 0.02), Vector3(0.05, 0.05, 0.03), black)
-	_add_dog_box(parent, center + Vector3(0.08, 0.04, 0.02), Vector3(0.05, 0.05, 0.03), black)
+	_add_dog_box(parent, center + Vector3(-0.1, 0.04, 0.02), Vector3(0.06, 0.06, 0.04), black)
+	_add_dog_box(parent, center + Vector3(0.1, 0.04, 0.02), Vector3(0.06, 0.06, 0.04), black)
 
 
 func _add_dog_box(parent: Node3D, pos: Vector3, size: Vector3, color: Color) -> MeshInstance3D:
@@ -773,7 +1183,7 @@ func _create_card_mesh(card_data: Dictionary) -> MeshInstance3D:
 	var mat := StandardMaterial3D.new()
 	mat.roughness = 0.9
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 
 	var face_up: bool = bool(card_data.get("faceUp", true))
@@ -890,6 +1300,10 @@ func _track_tween(tween: Tween) -> void:
 
 
 func _clear_cards() -> void:
+	for seat_id in _hand_total_labels.keys():
+		var board: Node3D = _hand_total_labels[seat_id]
+		if is_instance_valid(board) and board.get_parent() != _world:
+			board.reparent(_world)
 	for card in _card_nodes:
 		card.queue_free()
 	_card_nodes.clear()

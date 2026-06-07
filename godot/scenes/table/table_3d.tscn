@@ -4,11 +4,12 @@
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
-background_color = Color(0.06, 0.05, 0.08, 1)
+background_color = Color(0.08, 0.06, 0.05, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.45, 0.35, 0.28, 1)
-ambient_light_energy = 0.35
+ambient_light_color = Color(0.55, 0.48, 0.42, 1)
+ambient_light_energy = 0.65
 tonemap_mode = 2
+tonemap_exposure = 1.15
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_felt"]
 top_radius = 1.35
@@ -40,7 +41,7 @@ script = ExtResource("1_table_3d_script")
 
 [node name="SubViewport" type="SubViewport" parent="."]
 size = Vector2i(1280, 720)
-transparent_bg = true
+transparent_bg = false
 render_target_update_mode = 4
 physics_object_picking = true
 
@@ -48,21 +49,25 @@ physics_object_picking = true
 
 [node name="Camera3D" type="Camera3D" parent="SubViewport/World"]
 unique_name_in_owner = true
-position = Vector3(0, 3.1, 3.2)
-rotation = Vector3(-0.75, 0, 0)
-fov = 55.0
+transform = Transform3D(1, 0, 0, 0, 0.848048, 0.529919, 0, -0.529919, 0.848048, 0, 3.15, 3.35)
+fov = 48.0
 
 [node name="LampLight" type="OmniLight3D" parent="SubViewport/World"]
-position = Vector3(0, 2.6, 0.2)
-light_color = Color(1, 0.82, 0.55, 1)
-light_energy = 2.2
-omni_range = 6.0
+position = Vector3(0, 2.55, 0.15)
+light_color = Color(1, 0.86, 0.62, 1)
+light_energy = 4.5
+omni_range = 8.0
+
+[node name="FillLight" type="OmniLight3D" parent="SubViewport/World"]
+position = Vector3(-2.5, 2.0, 2.0)
+light_color = Color(0.75, 0.82, 0.95, 1)
+light_energy = 1.2
+omni_range = 10.0
 
 [node name="Sun" type="DirectionalLight3D" parent="SubViewport/World"]
-position = Vector3(0, 3, 0)
-rotation = Vector3(-0.8, 0.5, 0)
-light_color = Color(0.7, 0.65, 0.75, 1)
-light_energy = 0.5
+rotation = Vector3(-1.1, 0.4, 0)
+light_color = Color(0.95, 0.88, 0.78, 1)
+light_energy = 0.55
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewport/World"]
 environment = SubResource("Environment_1")
@@ -76,9 +81,14 @@ mesh = SubResource("CylinderMesh_rim")
 scale = Vector3(2.8, 0.02, 2.8)
 
 [node name="BackWall" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -3.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, -3.2)
 mesh = SubResource("BoxMesh_tray")
-scale = Vector3(8, 3.2, 0.15)
+scale = Vector3(8, 2.4, 0.15)
+
+[node name="Wainscot" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -3.15)
+mesh = SubResource("BoxMesh_tray")
+scale = Vector3(8, 1.1, 0.16)
 
 [node name="LeftWall" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 1.6, 0)
@@ -178,12 +188,12 @@ scale = Vector3(0.45, 0.2, 0.45)
 
 [node name="TableRim" type="MeshInstance3D" parent="SubViewport/World"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+transform = Transform3D(1.18, 0, 0, 0, 1, 0, 0, 0, 0.88, 0, 0.04, 0)
 mesh = SubResource("CylinderMesh_rim")
 
 [node name="TableMesh" type="MeshInstance3D" parent="SubViewport/World"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+transform = Transform3D(1.18, 0, 0, 0, 1, 0, 0, 0, 0.88, 0, 0.1, 0)
 mesh = SubResource("CylinderMesh_felt")
 
 [node name="ChipStack1" type="MeshInstance3D" parent="SubViewport/World"]
@@ -263,11 +273,3 @@ shape = SubResource("BoxShape3D_seat")
 
 [node name="CardRoot" type="Node3D" parent="SubViewport/World"]
 unique_name_in_owner = true
-
-[node name="ShoeLabel" type="Label3D" parent="SubViewport/World"]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 0.45, -0.95)
-text = "312"
-font_size = 48
-outline_size = 4
-modulate = Color(0.96, 0.94, 0.88, 1)

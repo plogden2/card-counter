@@ -32,14 +32,14 @@ theme_override_constants/separation = 16
 
 [node name="Title" type="Label" parent="MenuPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 42
-text = "Card Counter"
+theme_override_font_sizes/font_size = 36
+text = "CARD COUNTING TUTORIAL"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="MenuPanel/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Blackjack Counting Tutorial"
+theme_override_font_sizes/font_size = 16
+text = "Learn Hi-Lo card counting at the table"
 horizontal_alignment = 1
 
 [node name="TutorialButton" type="Button" parent="MenuPanel/VBoxContainer"]

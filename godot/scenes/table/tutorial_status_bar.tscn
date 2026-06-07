@@ -1,0 +1,49 @@
+[gd_scene load_steps=2 format=3 uid="uid://btutorialstatus01"]
+
+[ext_resource type="Script" path="res://scripts/scenes/tutorial_status_bar.gd" id="1_status"]
+
+[node name="TutorialStatusBar" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 320.0
+offset_bottom = 64.0
+mouse_filter = 2
+script = ExtResource("1_status")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"panel_status"
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="CountRow" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="PawIcon" type="Label" parent="Panel/VBox/CountRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "🐾"
+
+[node name="CountLine" type="Label" parent="Panel/VBox/CountRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.239, 0.18, 0.141, 1)
+theme_override_font_sizes/font_size = 16
+text = "Running Count: +0"
+
+[node name="Subtitle" type="Label" parent="Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.239, 0.18, 0.141, 1)
+theme_override_font_sizes/font_size = 13
+text = "Nice! You're doing great!"
+horizontal_alignment = 1

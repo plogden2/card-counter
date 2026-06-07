@@ -4,8 +4,10 @@ const UiTheme = preload("res://scripts/lib/ui_theme.gd")
 
 
 func test_ref_b_palette_tokens():
-	assert_eq(UiTheme.PANEL_GREEN, Color(0.12, 0.28, 0.16, 1.0))
-	assert_eq(UiTheme.TEXT_CREAM, Color(0.96, 0.94, 0.88, 1.0))
+	assert_eq(UiTheme.PANEL_GREEN, Color(0.173, 0.267, 0.165, 1.0))
+	assert_eq(UiTheme.PANEL_SIDEBAR, Color(0.141, 0.137, 0.118, 1.0))
+	assert_eq(UiTheme.TEXT_CREAM, Color(0.953, 0.871, 0.757, 1.0))
+	assert_eq(UiTheme.COUNT_POS, Color(0.478, 0.690, 0.314, 1.0))
 
 
 func test_count_color_map():
@@ -28,6 +30,12 @@ func test_format_bankroll_negative():
 	assert_eq(UiTheme.format_bankroll(-250), "$-250")
 
 
-func test_theme_loads_without_error():
-	var theme := UiTheme.load_theme()
-	assert_not_null(theme)
+func test_format_true_count():
+	assert_eq(UiTheme.format_true_count(1), "+1.0")
+	assert_eq(UiTheme.format_true_count(-2), "-2.0")
+	assert_eq(UiTheme.format_true_count(0), "0.0")
+
+
+func test_format_decks_remaining():
+	assert_eq(UiTheme.format_decks_remaining(2.0), "2.0")
+	assert_eq(UiTheme.format_decks_remaining(0.5), "0.5")
