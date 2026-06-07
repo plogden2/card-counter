@@ -2,12 +2,13 @@
 
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
-uid="uid://d3ke8pnpichx1"
-valid=false
+uid="uid://clqi1n3e2hetv"
+path="res://.godot/imported/deal.ogg-f26f637f6d7dce766354a4efd875d2ea.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/audio/sfx/deal.ogg"
+dest_files=["res://.godot/imported/deal.ogg-f26f637f6d7dce766354a4efd875d2ea.oggvorbisstr"]
 
 [params]
 

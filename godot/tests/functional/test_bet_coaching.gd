@@ -2,6 +2,7 @@ extends GutTest
 
 const BetSizing = preload("res://scripts/domain/bet_sizing.gd")
 const CoachingCopy = preload("res://scripts/tutorial/coaching_copy.gd")
+const CoachingCue = preload("res://scripts/presentation/coaching_cue.gd")
 
 
 func _ctx(true_count: int) -> Dictionary:
@@ -46,3 +47,29 @@ func test_generates_stay_or_leave_copy():
 	})
 	assert_string_contains(leave_message, "Consider leaving:")
 	assert_string_contains(leave_message, "True count -2")
+
+
+func test_tutorial_betting_highlights_place_bet():
+	var session := {"phase": "betting", "seats": []}
+	assert_eq(CoachingCue.highlight_action(session, "tutorial"), "place-bet")
+
+
+func test_tutorial_betting_does_not_highlight_deal():
+	var session := {"phase": "betting", "seats": []}
+	var highlight := CoachingCue.highlight_action(session, "tutorial")
+	assert_ne(highlight, "deal")
+	assert_true(highlight != "")
+
+
+func test_free_play_betting_has_no_coaching_highlight():
+	var session := {"phase": "betting", "seats": []}
+	assert_eq(CoachingCue.highlight_action(session, "free-play"), "")
+
+
+func test_bet_coaching_classification_maps_to_highlight_eligible_phase():
+	var session := {"phase": "betting", "seats": []}
+	var highlight := CoachingCue.highlight_action(session, "tutorial")
+	var coaching: Dictionary = BetSizing.get_bet_coaching(10, "spread-table", _ctx(3))
+	assert_eq(highlight, "place-bet")
+	assert_eq(coaching["classification"], "under")
+	assert_eq(CoachingCopy.bet_coaching_headline(coaching["classification"]), "Under-bet detected")

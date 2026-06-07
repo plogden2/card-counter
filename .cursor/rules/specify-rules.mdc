@@ -5,5 +5,5 @@ alwaysApply: true
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-`specs/001-card-counter-tutorial/plan.md` (quickstart: `specs/001-card-counter-tutorial/quickstart.md`).
+`specs/002-2-5d-visual-audio/plan.md` (quickstart: `specs/002-2-5d-visual-audio/quickstart.md`).
 <!-- SPECKIT END -->

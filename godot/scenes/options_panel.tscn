@@ -1,0 +1,74 @@
+[gd_scene load_steps=2 format=3 uid="uid://coptionspanel01"]
+
+[ext_resource type="Script" path="res://scripts/scenes/options_panel.gd" id="1_options"]
+
+[node name="OptionsPanel" type="PanelContainer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -200.0
+offset_right = 220.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_options")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Options"
+horizontal_alignment = 1
+
+[node name="SoundToggle" type="CheckButton" parent="VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sound Enabled"
+
+[node name="MotionToggle" type="CheckButton" parent="VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reduced Motion"
+
+[node name="MusicToggle" type="CheckButton" parent="VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Music Enabled"
+
+[node name="MusicSlider" type="HSlider" parent="VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.5
+
+[node name="SfxToggle" type="CheckButton" parent="VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "SFX Enabled"
+
+[node name="SfxSlider" type="HSlider" parent="VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.8
+
+[node name="CloseButton" type="Button" parent="VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Close"
+
+[connection signal="toggled" from="VBox/SoundToggle" to="." method="_on_sound_toggled"]
+[connection signal="toggled" from="VBox/MotionToggle" to="." method="_on_motion_toggled"]
+[connection signal="toggled" from="VBox/MusicToggle" to="." method="_on_music_toggled"]
+[connection signal="toggled" from="VBox/SfxToggle" to="." method="_on_sfx_toggled"]
+[connection signal="value_changed" from="VBox/MusicSlider" to="." method="_on_music_slider_changed"]
+[connection signal="value_changed" from="VBox/SfxSlider" to="." method="_on_sfx_slider_changed"]
+[connection signal="pressed" from="VBox/CloseButton" to="." method="_on_close_pressed"]

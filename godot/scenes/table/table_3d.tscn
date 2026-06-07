@@ -1,16 +1,33 @@
-[gd_scene load_steps=6 format=3 uid="uid://dbn3s8v4u6oo4"]
+[gd_scene load_steps=8 format=3 uid="uid://dbn3s8v4u6oo4"]
 
 [ext_resource type="Script" path="res://scripts/scenes/table_3d.gd" id="1_table_3d_script"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
-background_color = Color(0.03, 0.04, 0.06, 1)
+background_color = Color(0.06, 0.05, 0.08, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.45, 0.35, 0.28, 1)
+ambient_light_energy = 0.35
+tonemap_mode = 2
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_1"]
-size = Vector2(4.5, 3.2)
+[sub_resource type="CylinderMesh" id="CylinderMesh_felt"]
+top_radius = 1.35
+bottom_radius = 1.35
+height = 0.06
 
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_rim"]
+top_radius = 1.5
+bottom_radius = 1.5
+height = 0.12
+
+[sub_resource type="BoxMesh" id="BoxMesh_shoe"]
 size = Vector3(0.35, 0.2, 0.55)
+
+[sub_resource type="BoxMesh" id="BoxMesh_tray"]
+size = Vector3(0.5, 0.08, 0.35)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_seat"]
+size = Vector3(1.2, 0.6, 1.0)
 
 [node name="Table3D" type="SubViewportContainer"]
 unique_name_in_owner = true
@@ -25,32 +42,232 @@ script = ExtResource("1_table_3d_script")
 size = Vector2i(1280, 720)
 transparent_bg = true
 render_target_update_mode = 4
+physics_object_picking = true
 
 [node name="World" type="Node3D" parent="SubViewport"]
 
 [node name="Camera3D" type="Camera3D" parent="SubViewport/World"]
+unique_name_in_owner = true
 position = Vector3(0, 3.1, 3.2)
 rotation = Vector3(-0.75, 0, 0)
+fov = 55.0
+
+[node name="LampLight" type="OmniLight3D" parent="SubViewport/World"]
+position = Vector3(0, 2.6, 0.2)
+light_color = Color(1, 0.82, 0.55, 1)
+light_energy = 2.2
+omni_range = 6.0
 
 [node name="Sun" type="DirectionalLight3D" parent="SubViewport/World"]
 position = Vector3(0, 3, 0)
 rotation = Vector3(-0.8, 0.5, 0)
-light_energy = 1.4
+light_color = Color(0.7, 0.65, 0.75, 1)
+light_energy = 0.5
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewport/World"]
 environment = SubResource("Environment_1")
 
+[node name="RoomRoot" type="Node3D" parent="SubViewport/World"]
+unique_name_in_owner = true
+
+[node name="Floor" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0)
+mesh = SubResource("CylinderMesh_rim")
+scale = Vector3(2.8, 0.02, 2.8)
+
+[node name="BackWall" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -3.2)
+mesh = SubResource("BoxMesh_tray")
+scale = Vector3(8, 3.2, 0.15)
+
+[node name="LeftWall" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 1.6, 0)
+mesh = SubResource("BoxMesh_tray")
+scale = Vector3(0.15, 3.2, 6.5)
+
+[node name="RightWall" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 1.6, 0)
+mesh = SubResource("BoxMesh_tray")
+scale = Vector3(0.15, 3.2, 6.5)
+
+[node name="Bookshelf" type="Node3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -2.6)
+
+[node name="BookShelfBody" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Bookshelf"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("BoxMesh_tray")
+scale = Vector3(1.2, 1.5, 0.35)
+
+[node name="Book1" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Bookshelf"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.5, 0.05)
+mesh = SubResource("BoxMesh_shoe")
+scale = Vector3(0.15, 0.35, 0.25)
+
+[node name="Book2" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Bookshelf"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0.05)
+mesh = SubResource("BoxMesh_shoe")
+scale = Vector3(0.18, 0.4, 0.25)
+
+[node name="Book3" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Bookshelf"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.48, 0.05)
+mesh = SubResource("BoxMesh_shoe")
+scale = Vector3(0.14, 0.32, 0.25)
+
+[node name="Clock" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 2.1, -2.9)
+mesh = SubResource("BoxMesh_shoe")
+scale = Vector3(0.5, 0.5, 0.08)
+
+[node name="WindowFrame" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 1.5, -3.05)
+mesh = SubResource("BoxMesh_tray")
+scale = Vector3(1.6, 1.2, 0.1)
+
+[node name="WindowGlass" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 1.5, -2.98)
+mesh = SubResource("BoxMesh_tray")
+scale = Vector3(1.4, 1.0, 0.02)
+
+[node name="Skyline" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 1.3, -3.2)
+mesh = SubResource("BoxMesh_tray")
+scale = Vector3(1.3, 0.35, 0.05)
+
+[node name="WallArt" type="MeshInstance3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.8, -3.0)
+mesh = SubResource("BoxMesh_tray")
+scale = Vector3(0.7, 0.5, 0.05)
+
+[node name="Plant1" type="Node3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0, 0, -2.2)
+
+[node name="Pot" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Plant1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+mesh = SubResource("CylinderMesh_felt")
+scale = Vector3(0.18, 0.3, 0.18)
+
+[node name="PlantLeaves" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Plant1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+mesh = SubResource("BoxMesh_shoe")
+scale = Vector3(0.35, 0.5, 0.35)
+
+[node name="Plant2" type="Node3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0, 1.8)
+
+[node name="Pot" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Plant2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
+mesh = SubResource("CylinderMesh_felt")
+scale = Vector3(0.14, 0.24, 0.14)
+
+[node name="PlantLeaves" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/Plant2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
+mesh = SubResource("BoxMesh_shoe")
+scale = Vector3(0.28, 0.4, 0.28)
+
+[node name="LampMesh" type="Node3D" parent="SubViewport/World/RoomRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
+
+[node name="LampCord" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/LampMesh"]
+mesh = SubResource("BoxMesh_shoe")
+scale = Vector3(0.04, 0.6, 0.04)
+
+[node name="LampShade" type="MeshInstance3D" parent="SubViewport/World/RoomRoot/LampMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, 0)
+mesh = SubResource("CylinderMesh_felt")
+scale = Vector3(0.45, 0.2, 0.45)
+
+[node name="TableRim" type="MeshInstance3D" parent="SubViewport/World"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+mesh = SubResource("CylinderMesh_rim")
+
 [node name="TableMesh" type="MeshInstance3D" parent="SubViewport/World"]
 unique_name_in_owner = true
-mesh = SubResource("PlaneMesh_1")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+mesh = SubResource("CylinderMesh_felt")
+
+[node name="ChipStack1" type="MeshInstance3D" parent="SubViewport/World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.14, 0.35)
+mesh = SubResource("CylinderMesh_felt")
+scale = Vector3(0.14, 0.06, 0.14)
+
+[node name="ChipStack2" type="MeshInstance3D" parent="SubViewport/World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0.14, 0.35)
+mesh = SubResource("CylinderMesh_felt")
+scale = Vector3(0.14, 0.1, 0.14)
+
+[node name="ChipStack3" type="MeshInstance3D" parent="SubViewport/World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.14, -0.25)
+mesh = SubResource("CylinderMesh_felt")
+scale = Vector3(0.14, 0.08, 0.14)
 
 [node name="ShoeMesh" type="MeshInstance3D" parent="SubViewport/World"]
 unique_name_in_owner = true
-position = Vector3(1.65, 0.1, -0.95)
-mesh = SubResource("BoxMesh_1")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 0.1, -0.95)
+mesh = SubResource("BoxMesh_shoe")
+
+[node name="DiscardTray" type="MeshInstance3D" parent="SubViewport/World"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.55, 0.08, -0.85)
+mesh = SubResource("BoxMesh_tray")
 
 [node name="SeatRoot" type="Node3D" parent="SubViewport/World"]
 unique_name_in_owner = true
 
+[node name="SeatAreas" type="Node3D" parent="SubViewport/World"]
+unique_name_in_owner = true
+
+[node name="LearnerArea" type="Area3D" parent="SubViewport/World/SeatAreas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0.85)
+collision_layer = 1
+collision_mask = 0
+input_ray_pickable = true
+monitoring = true
+monitorable = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SubViewport/World/SeatAreas/LearnerArea"]
+shape = SubResource("BoxShape3D_seat")
+
+[node name="DealerArea" type="Area3D" parent="SubViewport/World/SeatAreas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.9)
+collision_layer = 1
+collision_mask = 0
+input_ray_pickable = true
+monitoring = true
+monitorable = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SubViewport/World/SeatAreas/DealerArea"]
+shape = SubResource("BoxShape3D_seat")
+
+[node name="Seat0Area" type="Area3D" parent="SubViewport/World/SeatAreas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0.3, 0.5)
+collision_layer = 1
+collision_mask = 0
+input_ray_pickable = true
+monitoring = true
+monitorable = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SubViewport/World/SeatAreas/Seat0Area"]
+shape = SubResource("BoxShape3D_seat")
+
+[node name="Seat1Area" type="Area3D" parent="SubViewport/World/SeatAreas"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.3, 0.5)
+collision_layer = 1
+collision_mask = 0
+input_ray_pickable = true
+monitoring = true
+monitorable = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SubViewport/World/SeatAreas/Seat1Area"]
+shape = SubResource("BoxShape3D_seat")
+
 [node name="CardRoot" type="Node3D" parent="SubViewport/World"]
 unique_name_in_owner = true
+
+[node name="ShoeLabel" type="Label3D" parent="SubViewport/World"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.65, 0.45, -0.95)
+text = "312"
+font_size = 48
+outline_size = 4
+modulate = Color(0.96, 0.94, 0.88, 1)

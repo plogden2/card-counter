@@ -12,6 +12,10 @@ static func default_profile() -> Dictionary:
 		"balance": TableConfig.STARTING_BANKROLL,
 		"selectedBetModel": "spread-table",
 		"soundEnabled": true,
+		"musicEnabled": true,
+		"sfxEnabled": true,
+		"musicVolume": 0.5,
+		"sfxVolume": 0.8,
 		"motionReduced": false,
 	}
 

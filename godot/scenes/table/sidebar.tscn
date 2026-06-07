@@ -4,82 +4,250 @@
 
 [node name="Sidebar" type="VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(280, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 script = ExtResource("1_sidebar_script")
 
 [node name="Title" type="Label" parent="."]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "Table Stats"
+theme_override_font_sizes/font_size = 20
+text = "CARD COUNTING TUTORIAL"
+horizontal_alignment = 1
 
-[node name="RunningCountRow" type="HBoxContainer" parent="."]
+[node name="HiLoPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_type_variation = &"stat_block"
+
+[node name="HiLoVBox" type="VBoxContainer" parent="HiLoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HiLoTitle" type="Label" parent="HiLoPanel/HiLoVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Hi-Lo Reference"
+horizontal_alignment = 1
+
+[node name="HiLoRow" type="HBoxContainer" parent="HiLoPanel/HiLoVBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="PosTag" type="Label" parent="HiLoPanel/HiLoVBox/HiLoRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.78, 0.42, 1)
+text = "2-6: +1"
+
+[node name="NeuTag" type="Label" parent="HiLoPanel/HiLoVBox/HiLoRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.55, 0.55, 1)
+text = "7-9: 0"
+
+[node name="NegTag" type="Label" parent="HiLoPanel/HiLoVBox/HiLoRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.32, 0.28, 1)
+text = "10-A: -1"
+
+[node name="RunningCountBlock" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_type_variation = &"stat_block"
+
+[node name="RCVBox" type="VBoxContainer" parent="RunningCountBlock"]
 layout_mode = 2
 
-[node name="RunningCountLabel" type="Label" parent="RunningCountRow"]
+[node name="RunningCountLabel" type="Label" parent="RunningCountBlock/RCVBox"]
 layout_mode = 2
-text = "Running Count"
+theme_override_font_sizes/font_size = 13
+text = "RUNNING COUNT"
 
-[node name="RunningCountValue" type="Label" parent="RunningCountRow"]
+[node name="RunningCountValue" type="Label" parent="RunningCountBlock/RCVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 8
-horizontal_alignment = 2
+theme_override_font_sizes/font_size = 28
 text = "0"
 
-[node name="TrueCountRow" type="HBoxContainer" parent="."]
+[node name="TrueCountBlock" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_type_variation = &"stat_block"
+
+[node name="TCVBox" type="VBoxContainer" parent="TrueCountBlock"]
 layout_mode = 2
 
-[node name="TrueCountLabel" type="Label" parent="TrueCountRow"]
+[node name="TrueCountLabel" type="Label" parent="TrueCountBlock/TCVBox"]
 layout_mode = 2
-text = "True Count"
+theme_override_font_sizes/font_size = 13
+text = "TRUE COUNT"
 
-[node name="TrueCountValue" type="Label" parent="TrueCountRow"]
+[node name="TrueCountValue" type="Label" parent="TrueCountBlock/TCVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 8
-horizontal_alignment = 2
+theme_override_font_sizes/font_size = 28
 text = "0"
 
-[node name="BankrollRow" type="HBoxContainer" parent="."]
+[node name="BankrollBlock" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_type_variation = &"stat_block"
+
+[node name="BankVBox" type="VBoxContainer" parent="BankrollBlock"]
 layout_mode = 2
 
-[node name="BankrollLabel" type="Label" parent="BankrollRow"]
+[node name="BankrollLabel" type="Label" parent="BankrollBlock/BankVBox"]
 layout_mode = 2
-text = "Bankroll"
+theme_override_font_sizes/font_size = 13
+text = "BANKROLL"
 
-[node name="BankrollValue" type="Label" parent="BankrollRow"]
+[node name="BankrollValue" type="Label" parent="BankrollBlock/BankVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 8
-horizontal_alignment = 2
-text = "$1000"
+theme_override_font_sizes/font_size = 24
+text = "$1,000"
 
-[node name="RecommendedBetRow" type="HBoxContainer" parent="."]
+[node name="BetBlock" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_type_variation = &"stat_block"
+
+[node name="BetVBox" type="VBoxContainer" parent="BetBlock"]
 layout_mode = 2
 
-[node name="RecommendedBetLabel" type="Label" parent="RecommendedBetRow"]
+[node name="RecommendedBetLabel" type="Label" parent="BetBlock/BetVBox"]
 layout_mode = 2
-text = "Recommended Bet"
+theme_override_font_sizes/font_size = 13
+text = "RECOMMENDED BET"
 
-[node name="RecommendedBetValue" type="Label" parent="RecommendedBetRow"]
+[node name="RecommendedBetValue" type="Label" parent="BetBlock/BetVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 8
-horizontal_alignment = 2
+theme_override_font_sizes/font_size = 24
 text = "$25"
 
-[node name="ShoeProgressRow" type="HBoxContainer" parent="."]
+[node name="CurrentBetLabel" type="Label" parent="BetBlock/BetVBox"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "YOUR BET"
 
-[node name="ShoeProgressLabel" type="Label" parent="ShoeProgressRow"]
-layout_mode = 2
-text = "Shoe Progress"
-
-[node name="ShoeProgressValue" type="Label" parent="ShoeProgressRow"]
+[node name="BetControls" type="HBoxContainer" parent="BetBlock/BetVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 8
-horizontal_alignment = 2
-text = "0%"
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="BetDecrease" type="Button" parent="BetBlock/BetVBox/BetControls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(44, 44)
+focus_mode = 2
+text = "−"
+
+[node name="SelectedBetValue" type="Label" parent="BetBlock/BetVBox/BetControls"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "$25"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BetIncrease" type="Button" parent="BetBlock/BetVBox/BetControls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(44, 44)
+focus_mode = 2
+text = "+"
+
+[node name="ChipRow" type="HBoxContainer" parent="BetBlock/BetVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="Chip5" type="Button" parent="BetBlock/BetVBox/ChipRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(52, 36)
+focus_mode = 2
+text = "$5"
+
+[node name="Chip25" type="Button" parent="BetBlock/BetVBox/ChipRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(52, 36)
+focus_mode = 2
+text = "$25"
+
+[node name="Chip50" type="Button" parent="BetBlock/BetVBox/ChipRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(52, 36)
+focus_mode = 2
+text = "$50"
+
+[node name="Chip100" type="Button" parent="BetBlock/BetVBox/ChipRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(52, 36)
+focus_mode = 2
+text = "$100"
+
+[node name="ShoeBlock" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_type_variation = &"stat_block"
+
+[node name="ShoeVBox" type="VBoxContainer" parent="ShoeBlock"]
+layout_mode = 2
+
+[node name="ShoeRemainingLabel" type="Label" parent="ShoeBlock/ShoeVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "CARDS REMAINING"
+
+[node name="ShoeRemainingValue" type="Label" parent="ShoeBlock/ShoeVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "312"
+
+[node name="ButtonRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AnalyticsButton" type="Button" parent="ButtonRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(88, 44)
+focus_mode = 2
+text = "Analytics"
+
+[node name="OptionsButton" type="Button" parent="ButtonRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(88, 44)
+focus_mode = 2
+text = "Options"
+
+[node name="TipPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"panel_tip"
+
+[node name="TipVBox" type="VBoxContainer" parent="TipPanel"]
+layout_mode = 2
+
+[node name="TipHeader" type="Label" parent="TipPanel/TipVBox"]
+layout_mode = 2
+text = "💡 Tip"
+
+[node name="TipLabel" type="Label" parent="TipPanel/TipVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "Watch the running count as cards are dealt."
+
+[connection signal="pressed" from="ButtonRow/AnalyticsButton" to="." method="_on_analytics_pressed"]
+[connection signal="pressed" from="ButtonRow/OptionsButton" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="BetBlock/BetVBox/BetControls/BetDecrease" to="." method="_on_bet_decrease_pressed"]
+[connection signal="pressed" from="BetBlock/BetVBox/BetControls/BetIncrease" to="." method="_on_bet_increase_pressed"]
+[connection signal="pressed" from="BetBlock/BetVBox/ChipRow/Chip5" to="." method="_on_chip_preset_pressed" binds= [5]]
+[connection signal="pressed" from="BetBlock/BetVBox/ChipRow/Chip25" to="." method="_on_chip_preset_pressed" binds= [25]]
+[connection signal="pressed" from="BetBlock/BetVBox/ChipRow/Chip50" to="." method="_on_chip_preset_pressed" binds= [50]]
+[connection signal="pressed" from="BetBlock/BetVBox/ChipRow/Chip100" to="." method="_on_chip_preset_pressed" binds= [100]]

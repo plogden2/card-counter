@@ -11,12 +11,12 @@ func before_each() -> void:
 
 func test_maps_player_actions_to_sound_categories():
 	var audio := AudioManager.new()
-	assert_eq(audio.map_action_to_sound("place-bet"), "deal")
+	assert_eq(audio.map_action_to_sound("place-bet"), "bet")
 	assert_eq(audio.map_action_to_sound("hit"), "hit")
 	assert_eq(audio.map_action_to_sound("stand"), "stand")
 	assert_eq(audio.map_action_to_sound("unknown"), "")
 	assert_eq(audio.map_action_to_sound("settle", "win"), "win")
-	assert_eq(audio.map_action_to_sound("settle", "loss"), "lose")
+	assert_eq(audio.map_action_to_sound("settle", "loss"), "loss")
 
 
 func test_records_sfx_when_enabled():
@@ -48,6 +48,39 @@ func test_game_controller_emits_action_audio():
 		controller.call("apply_action", "stand")
 	var played: Array = controller.audio_manager.call("get_played_actions")
 	assert_true(played.has("deal"))
+
+
+func test_rapid_action_overlap_records_all_cues():
+	var audio := AudioManager.new()
+	add_child_autofree(audio)
+	audio.set_enabled(true)
+	var actions := ["place-bet", "deal", "hit", "stand", "double", "split"]
+	var expected: Array[String] = []
+	for action in actions:
+		audio.play_action(action)
+		expected.append(audio.map_action_to_sound(action))
+	assert_eq(audio.get_played_actions(), expected)
+	var sfx_players := 0
+	for child in audio.get_children():
+		if child is AudioStreamPlayer and child.name != "BgmPlayer":
+			sfx_players += 1
+	assert_gt(sfx_players, 0)
+
+
+func test_missing_sfx_asset_continues_silently():
+	var rel_path := "res://assets/audio/sfx/bet_confirm.ogg"
+	var disk_path := ProjectSettings.globalize_path(rel_path)
+	var backup_path := "%s.test_bak" % disk_path
+	var had_file := FileAccess.file_exists(disk_path)
+	if had_file:
+		DirAccess.rename_absolute(disk_path, backup_path)
+	var audio := AudioManager.new()
+	add_child_autofree(audio)
+	audio.set_enabled(true)
+	audio.play_action("place-bet")
+	assert_eq(audio.get_played_actions(), ["bet"])
+	if had_file:
+		DirAccess.rename_absolute(backup_path, disk_path)
 
 
 func test_uses_profile_sound_flag_to_mute_audio():

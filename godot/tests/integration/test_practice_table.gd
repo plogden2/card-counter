@@ -1,5 +1,7 @@
 extends GutTest
 
+const ActionMenu = preload("res://scripts/presentation/action_menu.gd")
+const ActionPanelScript = preload("res://scripts/scenes/action_panel.gd")
 const GameControllerScript = preload("res://scripts/game/game_controller.gd")
 
 
@@ -50,3 +52,55 @@ func test_completes_a_hand_through_stand():
 	var session: Dictionary = controller.call("get_session")
 	assert_eq(session["phase"], "settled")
 	assert_eq(int(session["handsPlayed"]), 1)
+
+
+func test_betting_phase_session_maps_to_visible_actions():
+	var controller: Node = GameControllerScript.new()
+	controller._ready()
+	controller.call("start_free_play", {"deckCount": 1, "initialOtherPlayers": 0})
+	var session: Dictionary = controller.call("get_session")
+	var legal: Array[String] = ActionMenu.visible_actions(session)
+	assert_eq(session["phase"], "betting")
+	assert_true(legal.has("place-bet"))
+	assert_true(legal.has("deal"))
+	assert_true(legal.has("home"))
+	var panel: Node = ActionPanelScript.new()
+	add_child_autofree(panel)
+	panel.call("render", session)
+	var visible: Array = panel.call("get_visible_action_ids")
+	for action in legal:
+		assert_true(visible.has(action))
+
+
+func test_player_turn_visible_actions_match_action_menu():
+	var controller: Node = GameControllerScript.new()
+	controller._ready()
+	controller.call("start_free_play", {"deckCount": 1, "initialOtherPlayers": 0})
+	controller.call("place_bet", 10)
+	controller.call("deal")
+	var session: Dictionary = controller.call("get_session")
+	if session["phase"] == "insurance":
+		controller.call("apply_action", "insurance-decline")
+		session = controller.call("get_session")
+	if session["phase"] != "player-turn":
+		pending("RNG did not reach player-turn for action visibility check")
+		return
+	var legal: Array[String] = ActionMenu.visible_actions(session)
+	assert_true(legal.has("hit"))
+	assert_true(legal.has("stand"))
+	assert_true(legal.has("home"))
+
+
+func test_settled_phase_shows_continue_action():
+	var controller: Node = GameControllerScript.new()
+	controller._ready()
+	controller.call("start_free_play", {"deckCount": 1, "initialOtherPlayers": 0})
+	controller.call("place_bet", 10)
+	controller.call("deal")
+	_settle_hand(controller)
+	var session: Dictionary = controller.call("get_session")
+	var legal: Array[String] = ActionMenu.visible_actions(session)
+	assert_eq(session["phase"], "settled")
+	assert_true(legal.has("continue"))
+	assert_false(legal.has("hit"))
+	assert_false(legal.has("stand"))

@@ -1,0 +1,22 @@
+{
+  "generated": [
+    "assets\\audio\\bgm\\table_loop.ogg",
+    "assets\\audio\\sfx\\bet_confirm.ogg",
+    "assets\\audio\\sfx\\deal.ogg",
+    "assets\\audio\\sfx\\hit.ogg",
+    "assets\\audio\\sfx\\stand.ogg",
+    "assets\\audio\\sfx\\double.ogg",
+    "assets\\audio\\sfx\\split.ogg",
+    "assets\\audio\\sfx\\insurance_yes.ogg",
+    "assets\\audio\\sfx\\insurance_no.ogg",
+    "assets\\audio\\sfx\\win.ogg",
+    "assets\\audio\\sfx\\lose.ogg",
+    "assets\\audio\\sfx\\push.ogg",
+    "assets\\audio\\sfx\\blackjack.ogg",
+    "assets\\audio\\sfx\\shuffle.ogg",
+    "assets\\audio\\sfx\\chip.ogg",
+    "assets\\audio\\sfx\\ui_confirm.ogg"
+  ],
+  "sample_rate": 44100,
+  "style": "cozy-life-sim"
+}

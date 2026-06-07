@@ -159,14 +159,14 @@ is 3D.
    above the 3D table and critical stats (counts, bankroll, shoe counter) remain visible
    without scrolling.
 
-**Test Mapping** *(mandatory per constitution)*:
+**Test Mapping** *(mandatory per constitution; Godot GUT + scene integration per constitution v3)*:
 
 | Layer | Test File(s) | Scenarios Covered |
 |-------|--------------|-------------------|
-| Unit | tests/unit/ui-theme.test.ts | Shared theme tokens, screen classification |
-| Functional | tests/functional/ui-shell-consistency.test.ts | Shell applied per scene type |
-| Integration | tests/integration/analytics-panel.test.ts | Sidebar trigger → overlay graphs |
-| Playwright | tests/e2e/presentation.spec.ts | Home/Setup/Table sidebar styling match; analytics drawer |
+| Unit | `godot/tests/unit/test_ui_theme.gd` | Shared theme tokens, screen classification |
+| Functional | `godot/tests/functional/test_ui_shell_consistency.gd` | Shell applied per scene type |
+| Integration | `godot/tests/integration/test_analytics_panel.gd` | Sidebar trigger → overlay graphs |
+| Scene integration | `godot/tests/integration/test_presentation_flow.gd` | Home/Setup/Table sidebar styling match; analytics drawer |
 
 ---
 
@@ -194,10 +194,11 @@ and smooth deal/flip/collect animations—without requiring audio or action-high
 3. **Given** a card state change (deal, hit, flip, split, collect), **When** the event occurs,
    **Then** a smooth animation moves or reveals the card without obscuring legibility.
 4. **Given** any game screen showing the table, **When** the learner views the scene, **Then**
-   the presentation shows a low-poly 3D lamp-lit room and round table, seated 3D dog
-   characters, 3D cards on the felt with real perspective and shadows, a visible 3D shoe
-   stack with remaining-card count, and a flat 2D sidebar for session stats—cohesive with
-   the Visual & Layout Direction above.
+   the presentation shows a low-poly 3D lamp-lit room and round table, **seated stylized
+   low-poly 3D dog characters** (procedural meshes or glTF—final art may ship in polish),
+   3D cards on the felt with real perspective and shadows, a visible 3D shoe stack with
+   **remaining-card count**, and a flat 2D sidebar for session stats—cohesive with the
+   Visual & Layout Direction above.
 5. **Given** cards are dealt to multiple seats, **When** hands contain more than one card,
    **Then** cards fan slightly on the felt while remaining legible.
 6. **Given** many cards are on the table, **When** space is tight, **Then** cards auto-scale
@@ -205,14 +206,14 @@ and smooth deal/flip/collect animations—without requiring audio or action-high
 7. **Given** the learner hovers or focuses another seat’s cards, **When** inspection is needed,
    **Then** that hand zooms for closer reading and returns to normal on hover/focus exit.
 
-**Test Mapping** *(mandatory per constitution)*:
+**Test Mapping** *(mandatory per constitution; Godot GUT + scene integration per constitution v3)*:
 
 | Layer | Test File(s) | Scenarios Covered |
 |-------|--------------|-------------------|
-| Unit | tests/unit/card-display-state.test.ts | Card visibility rules per seat and phase |
-| Functional | tests/functional/table-card-layout.test.ts | Placement, orientation, legibility thresholds |
-| Integration | tests/integration/table-presentation.test.ts | Hand events trigger correct card visuals |
-| Playwright | tests/e2e/presentation.spec.ts | Cards visible on table during live hand |
+| Unit | `godot/tests/unit/test_card_layout.gd` | Card visibility rules per seat and phase |
+| Functional | `godot/tests/functional/test_table_card_layout.gd` | Placement, orientation, legibility thresholds |
+| Integration | `godot/tests/integration/test_table_presentation.gd` | Hand events trigger correct card visuals |
+| Scene integration | `godot/tests/integration/test_presentation_flow.gd` | Cards visible on table during live hand |
 
 ---
 
@@ -244,14 +245,14 @@ action set matches legal moves only.
 5. **Given** the learner uses keyboard input, **When** an action is available, **Then**
    keyboard shortcuts map only to currently visible legal actions.
 
-**Test Mapping** *(mandatory per constitution)*:
+**Test Mapping** *(mandatory per constitution; Godot GUT + scene integration per constitution v3)*:
 
 | Layer | Test File(s) | Scenarios Covered |
 |-------|--------------|-------------------|
-| Unit | tests/unit/strategy.test.ts, tests/unit/hand.test.ts | Legal action derivation per hand state |
-| Functional | tests/functional/action-visibility.test.ts | Action set filtering across hand phases |
-| Integration | tests/integration/practice-table.test.ts | Domain hand state → visible action list |
-| Playwright | tests/e2e/practice-table.spec.ts | UI shows/hides actions through a full hand |
+| Unit | `godot/tests/unit/test_action_menu.gd`, `godot/tests/unit/test_strategy.gd`, `godot/tests/unit/test_hand.gd` | Legal action derivation per hand state |
+| Functional | `godot/tests/functional/test_action_visibility.gd` | Action set filtering across hand phases |
+| Integration | `godot/tests/integration/test_practice_table.gd` | Domain hand state → visible action list |
+| Scene integration | `godot/tests/integration/test_presentation_flow.gd` | UI shows/hides actions through a full hand |
 
 ---
 
@@ -284,14 +285,14 @@ no highlight appears in Free Play.
    action resolves, **Then** coaching feedback explains the outcome without blocking progress
    unless the lesson requires retry.
 
-**Test Mapping** *(mandatory per constitution)*:
+**Test Mapping** *(mandatory per constitution; Godot GUT + scene integration per constitution v3)*:
 
 | Layer | Test File(s) | Scenarios Covered |
 |-------|--------------|-------------------|
-| Unit | tests/unit/strategy.test.ts, tests/unit/tutorial.test.ts | Recommended action per scenario |
-| Functional | tests/functional/bet-coaching.test.ts | Coaching highlight eligibility rules |
-| Integration | tests/integration/table-presentation.test.ts | Tutorial flag → highlight on action UI |
-| Playwright | tests/e2e/tutorial-lesson.spec.ts | Highlight visible in lesson; absent in Free Play |
+| Unit | `godot/tests/unit/test_coaching_cue.gd`, `godot/tests/unit/test_strategy.gd`, `godot/tests/unit/test_tutorial.gd` | Recommended action per scenario |
+| Functional | `godot/tests/functional/test_bet_coaching.gd` | Coaching highlight eligibility rules |
+| Integration | `godot/tests/integration/test_table_presentation.gd` | Tutorial flag → highlight on action UI |
+| Scene integration | `godot/tests/integration/test_tutorial_highlight.gd` | Highlight visible in lesson; absent in Free Play; non-highlight choice coaching feedback |
 
 ---
 
@@ -323,14 +324,14 @@ when leaving the table scene.
 5. **Given** the learner navigates away from the table, **When** the table scene unloads,
    **Then** background music stops.
 
-**Test Mapping** *(mandatory per constitution)*:
+**Test Mapping** *(mandatory per constitution; Godot GUT + scene integration per constitution v3)*:
 
 | Layer | Test File(s) | Scenarios Covered |
 |-------|--------------|-------------------|
-| Unit | tests/unit/audio-settings.test.ts | Music mute/volume state |
-| Functional | tests/functional/audio-cues.test.ts | Music start/stop/loop behavior |
-| Integration | tests/integration/table-presentation.test.ts | Scene lifecycle → music control |
-| Playwright | tests/e2e/presentation.spec.ts | Music toggle and persistence in browser |
+| Unit | `godot/tests/unit/test_audio_settings.gd` | Music mute/volume state |
+| Functional | `godot/tests/functional/test_audio_cues.gd` | Music start/stop/loop behavior |
+| Integration | `godot/tests/integration/test_table_presentation.gd` | Scene lifecycle → music control |
+| Scene integration | `godot/tests/integration/test_audio_lifecycle.gd` | Music toggle and persistence |
 
 ---
 
@@ -363,14 +364,14 @@ and verifying a unique mapped effect plays; verifying mute suppresses all effect
 5. **Given** sound effects are muted but music is enabled, **When** the learner acts,
    **Then** only music plays; the inverse also holds.
 
-**Test Mapping** *(mandatory per constitution)*:
+**Test Mapping** *(mandatory per constitution; Godot GUT + scene integration per constitution v3)*:
 
 | Layer | Test File(s) | Scenarios Covered |
 |-------|--------------|-------------------|
-| Unit | tests/unit/audio-action-map.test.ts | Complete action-to-sound mapping |
-| Functional | tests/functional/audio-cues.test.ts | Each action category fires correct cue |
-| Integration | tests/integration/table-presentation.test.ts | Hand events → audio triggers |
-| Playwright | tests/e2e/presentation.spec.ts | Audible feedback on key actions (where automatable) |
+| Unit | `godot/tests/unit/test_audio_action_map.gd` | Complete action-to-sound mapping |
+| Functional | `godot/tests/functional/test_audio_cues.gd` | Each action category fires correct cue |
+| Integration | `godot/tests/integration/test_table_presentation.gd` | Hand events → audio triggers |
+| Scene integration | `godot/tests/integration/test_audio_lifecycle.gd` | Audible feedback on key actions |
 
 ---
 
@@ -403,14 +404,14 @@ state throughout.
 5. **Given** the learner hovers or focuses a visible action button, **When** the control is
    interactive, **Then** a subtle motion cue (wobble or scale) confirms it is selectable.
 
-**Test Mapping** *(mandatory per constitution)*:
+**Test Mapping** *(mandatory per constitution; Godot GUT + scene integration per constitution v3)*:
 
 | Layer | Test File(s) | Scenarios Covered |
 |-------|--------------|-------------------|
-| Unit | tests/unit/motion-preference.test.ts | Reduced-motion flag handling |
-| Functional | tests/functional/table-card-layout.test.ts | Animation skip vs full motion paths |
-| Integration | tests/integration/table-presentation.test.ts | Event → animation trigger wiring |
-| Playwright | tests/e2e/presentation.spec.ts | Reduced-motion path; hand completes with animations |
+| Unit | `godot/tests/unit/test_motion_preference.gd` | Reduced-motion flag handling |
+| Functional | `godot/tests/functional/test_table_card_layout.gd` | Animation skip vs full motion paths |
+| Integration | `godot/tests/integration/test_table_presentation.gd` | Event → animation trigger wiring |
+| Scene integration | `godot/tests/integration/test_presentation_flow.gd` | Reduced-motion path; hand completes with animations |
 
 ---
 

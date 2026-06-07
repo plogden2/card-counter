@@ -11,7 +11,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_tutorial")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="MenuPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -19,46 +20,56 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -320.0
-offset_top = -210.0
+offset_top = -230.0
 offset_right = 320.0
-offset_bottom = 210.0
+offset_bottom = 230.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuPanel"]
+layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="Title" type="Label" parent="VBoxContainer"]
+[node name="Title" type="Label" parent="MenuPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
-text = "Tutorial"
+text = "CARD COUNTING TUTORIAL"
 horizontal_alignment = 1
 
-[node name="StepText" type="RichTextLabel" parent="VBoxContainer"]
+[node name="StepText" type="RichTextLabel" parent="MenuPanel/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(0, 180)
 bbcode_enabled = false
 text = "Follow lesson steps to practice counting."
 fit_content = true
 
-[node name="ButtonsRow" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ButtonsRow" type="HBoxContainer" parent="MenuPanel/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="NextStepButton" type="Button" parent="VBoxContainer/ButtonsRow"]
+[node name="NextStepButton" type="Button" parent="MenuPanel/VBoxContainer/ButtonsRow"]
 layout_mode = 2
 custom_minimum_size = Vector2(170, 46)
 text = "Next Step"
 
-[node name="PlayHandButton" type="Button" parent="VBoxContainer/ButtonsRow"]
+[node name="PlayHandButton" type="Button" parent="MenuPanel/VBoxContainer/ButtonsRow"]
 layout_mode = 2
 custom_minimum_size = Vector2(170, 46)
 text = "Play Hand"
 
-[node name="HomeButton" type="Button" parent="VBoxContainer"]
+[node name="OptionsButton" type="Button" parent="MenuPanel/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(170, 44)
+text = "Options"
+
+[node name="HomeButton" type="Button" parent="MenuPanel/VBoxContainer"]
 layout_mode = 2
 custom_minimum_size = Vector2(170, 46)
 text = "Home"
 
-[connection signal="pressed" from="VBoxContainer/ButtonsRow/NextStepButton" to="." method="_on_next_step_pressed"]
-[connection signal="pressed" from="VBoxContainer/ButtonsRow/PlayHandButton" to="." method="_on_play_hand_pressed"]
-[connection signal="pressed" from="VBoxContainer/HomeButton" to="." method="_on_home_pressed"]
+[connection signal="pressed" from="MenuPanel/VBoxContainer/ButtonsRow/NextStepButton" to="." method="_on_next_step_pressed"]
+[connection signal="pressed" from="MenuPanel/VBoxContainer/ButtonsRow/PlayHandButton" to="." method="_on_play_hand_pressed"]
+[connection signal="pressed" from="MenuPanel/VBoxContainer/OptionsButton" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="MenuPanel/VBoxContainer/HomeButton" to="." method="_on_home_pressed"]

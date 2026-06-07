@@ -32,8 +32,13 @@ func _ready() -> void:
 	profile = LearnerProfile.load_profile()
 	tutorial_progress = Tutorial.create_tutorial_progress()
 	audio_manager = AudioManagerScript.new()
-	audio_manager.call("set_enabled", bool(profile.get("soundEnabled", true)))
-	audio_manager.call("set_bgm", bool(profile.get("soundEnabled", true)))
+	add_child(audio_manager)
+	var sound_on: bool = bool(profile.get("soundEnabled", true))
+	audio_manager.call("set_enabled", sound_on)
+	audio_manager.call("set_music_enabled", bool(profile.get("musicEnabled", sound_on)))
+	audio_manager.call("set_sfx_enabled", bool(profile.get("sfxEnabled", sound_on)))
+	audio_manager.call("set_music_volume", float(profile.get("musicVolume", 0.5)))
+	audio_manager.call("set_sfx_volume", float(profile.get("sfxVolume", 0.8)))
 	_check_mid_hand_recovery()
 
 
