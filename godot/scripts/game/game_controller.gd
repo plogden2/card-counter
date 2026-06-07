@@ -7,6 +7,7 @@ const Blackjack = preload("res://scripts/domain/blackjack.gd")
 const CoachingCopy = preload("res://scripts/tutorial/coaching_copy.gd")
 const Counting = preload("res://scripts/domain/counting.gd")
 const EventBus = preload("res://scripts/lib/events.gd")
+const AudioManagerScript = preload("res://scripts/game/audio_manager.gd")
 const HandSnapshot = preload("res://scripts/persistence/hand_snapshot.gd")
 const LearnerProfile = preload("res://scripts/persistence/learner_profile.gd")
 const Lessons = preload("res://scripts/tutorial/lessons.gd")
@@ -24,11 +25,15 @@ var session: Dictionary = {}
 var analytics_overlay: Node = null
 var rng = Rng.create(42)
 var pre_hand_snapshot: Dictionary = {}
+var audio_manager: Node = null
 
 
 func _ready() -> void:
 	profile = LearnerProfile.load_profile()
 	tutorial_progress = Tutorial.create_tutorial_progress()
+	audio_manager = AudioManagerScript.new()
+	audio_manager.call("set_enabled", bool(profile.get("soundEnabled", true)))
+	audio_manager.call("set_bgm", bool(profile.get("soundEnabled", true)))
 	_check_mid_hand_recovery()
 
 
@@ -106,6 +111,7 @@ func deal() -> Dictionary:
 		return session
 	pre_hand_snapshot = session.duplicate(true)
 	session = Blackjack.deal_initial(session, rng)
+	_play_audio_action("deal")
 	events.emit_event("count:updated", session["countState"])
 	_persist_mid_hand()
 	return session
@@ -116,6 +122,7 @@ func apply_action(action: String) -> Dictionary:
 		return session
 	var balance_before: int = int(session["balance"])
 	session = Blackjack.apply_action(session, "learner", action, rng)
+	_play_audio_action(action)
 	events.emit_event("count:updated", session["countState"])
 
 	if session["phase"] == "settled":
@@ -244,6 +251,13 @@ func _on_hand_settled(balance_before: int) -> void:
 	if int(session["balance"]) != balance_before:
 		LearnerProfile.save_profile(profile)
 
+	var outcome := "push"
+	if int(session["balance"]) > balance_before:
+		outcome = "win"
+	elif int(session["balance"]) < balance_before:
+		outcome = "loss"
+	_play_audio_action("settle", outcome)
+
 
 func _persist_mid_hand() -> void:
 	if session.is_empty():
@@ -259,3 +273,9 @@ func _check_mid_hand_recovery() -> void:
 	var snapshot: Variant = HandSnapshot.load_hand_snapshot_or_null()
 	if snapshot != null:
 		session = snapshot["sessionState"]
+
+
+func _play_audio_action(action: String, settle_outcome: String = "") -> void:
+	if audio_manager == null:
+		return
+	audio_manager.call("play_action", action, settle_outcome)
