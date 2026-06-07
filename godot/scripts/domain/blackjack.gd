@@ -49,13 +49,18 @@ static func place_bet(session: Dictionary, wager: int) -> Dictionary:
 	return next
 
 
-static func deal_initial(session: Dictionary, _rng: Rng) -> Dictionary:
+static func deal_initial(session: Dictionary, rng: Rng) -> Dictionary:
 	if int(session["currentWager"]) < int(session["tableConfiguration"]["tableMinBet"]):
 		push_error("Must place bet before dealing")
 		return session
 
 	var state: Dictionary = session.duplicate(true)
 	var shoe: Dictionary = state["shoe"]
+	var cards_needed: int = state["seats"].size() * 2 + 2
+	if Shoe.needs_reshuffle(shoe, cards_needed):
+		shoe = Shoe.reshuffle(shoe, state["tableConfiguration"]["deckCount"], rng)
+		state["countState"] = Counting.create_count_state(shoe["cards"].size())
+
 	var seats: Array = []
 	for seat in state["seats"]:
 		var hand := {
@@ -86,47 +91,127 @@ static func deal_initial(session: Dictionary, _rng: Rng) -> Dictionary:
 	for seat in seats:
 		visible_cards.append_array(seat["hands"][0]["cards"])
 	visible_cards.append(dealer_cards[0])
-	var count_state: Dictionary = Counting.update_count(state["countState"], visible_cards, shoe["cards"].size())
 
 	state["shoe"] = shoe
 	state["seats"] = seats
 	state["dealerCards"] = dealer_cards
 	state["dealerHoleHidden"] = true
-	state["countState"] = count_state
+	state["countState"] = Counting.update_count(state["countState"], visible_cards, shoe["cards"].size())
 	state["activeSeatId"] = "learner"
 	state["activeHandIndex"] = 0
-	var dealer_up_rank = dealer_cards[0]["rank"]
-	state["phase"] = "insurance" if (dealer_up_rank is String and dealer_up_rank == "A") else "player-turn"
+	state["phase"] = "insurance" if (dealer_cards[0]["rank"] is String and dealer_cards[0]["rank"] == "A") else "player-turn"
 	return state
 
 
-static func apply_action(session: Dictionary, seat_id: String, action: String, _rng: Rng) -> Dictionary:
+static func apply_action(session: Dictionary, seat_id: String, action: String, rng: Rng) -> Dictionary:
 	var state: Dictionary = session.duplicate(true)
-	if action != "insurance-accept" and action != "insurance-decline":
-		push_error("Action not implemented in Task 11")
+
+	if action == "insurance-accept" or action == "insurance-decline":
+		return _handle_insurance(state, seat_id, action)
+
+	if state["phase"] != "player-turn":
+		push_error("Cannot apply %s in phase %s" % [action, state["phase"]])
 		return state
+
+	var seat_index: int = _find_seat_index(state["seats"], seat_id)
+	if seat_index == -1:
+		push_error("Seat not found")
+		return state
+
+	var active_hand_index: int = int(state["activeHandIndex"])
+	var hand: Dictionary = state["seats"][seat_index]["hands"][active_hand_index]
+	if hand["status"] != "active":
+		push_error("No active hand")
+		return state
+
+	match action:
+		"hit":
+			state = _hit(state, seat_index, active_hand_index)
+		"stand":
+			state["seats"][seat_index]["hands"][active_hand_index]["status"] = "stood"
+		"double":
+			if not Hand.can_double(hand):
+				push_error("Cannot double")
+				return state
+			state = _double_down(state, seat_index, active_hand_index)
+		"split":
+			if not Hand.can_split(hand):
+				push_error("Cannot split")
+				return state
+			state = _split_hand(state, seat_index, active_hand_index)
+		_:
+			push_error("Unknown action")
+			return state
+
+	state = _advance_turn(state)
+	if state["phase"] == "dealer-turn":
+		state = _play_dealer(state)
+		state = settle_hand(state)
+	return state
+
+
+static func settle_hand(session: Dictionary) -> Dictionary:
+	var state: Dictionary = session.duplicate(true)
+	var dealer_total: int = int(Hand.hand_value(state["dealerCards"])["total"])
+	var dealer_blackjack: bool = Hand.is_blackjack(state["dealerCards"]) and state["dealerCards"].size() == 2
+	var balance: int = int(state["balance"])
+
+	for seat in state["seats"]:
+		for hand in seat["hands"]:
+			if hand["status"] == "bust":
+				balance -= int(hand["wager"])
+				continue
+
+			var player_total: int = int(Hand.hand_value(hand["cards"])["total"])
+			var player_blackjack: bool = Hand.is_blackjack(hand["cards"]) and hand["cards"].size() == 2 and not bool(hand["isSplit"])
+
+			if dealer_blackjack:
+				if not player_blackjack:
+					balance -= int(hand["wager"])
+			elif player_blackjack:
+				balance += int(floor(float(hand["wager"]) * 1.5))
+			elif player_total > dealer_total or dealer_total > 21:
+				balance += int(hand["wager"])
+			elif player_total < dealer_total:
+				balance -= int(hand["wager"])
+
+	state["balance"] = balance
+	state["shoe"] = Shoe.on_hand_settled(state["shoe"], state["tableConfiguration"]["handsBeforeReshuffle"])
+	state["phase"] = "settled"
+	state["handsPlayed"] = int(state["handsPlayed"]) + 1
+	state["dealerHoleHidden"] = false
+	return state
+
+
+static func hand_value(cards: Array) -> Dictionary:
+	return Hand.hand_value(cards)
+
+
+static func _handle_insurance(session: Dictionary, seat_id: String, action: String) -> Dictionary:
+	var state: Dictionary = session.duplicate(true)
 	if state["phase"] != "insurance":
 		push_error("Insurance not offered")
 		return state
-	if state["dealerCards"][0]["rank"] != "A":
+	if not (state["dealerCards"][0]["rank"] is String and state["dealerCards"][0]["rank"] == "A"):
 		push_error("Insurance only when dealer shows Ace")
 		return state
 
-	for seat in state["seats"]:
-		if seat["id"] == seat_id:
-			var hand: Dictionary = seat["hands"][0]
-			if action == "insurance-accept":
-				hand["insuranceWager"] = int(floor(float(hand["wager"]) / 2.0))
+	var seat_index: int = _find_seat_index(state["seats"], seat_id)
+	if seat_index == -1:
+		push_error("Seat not found")
+		return state
+	if action == "insurance-accept":
+		var insurance_wager: int = int(floor(float(state["seats"][seat_index]["hands"][0]["wager"]) / 2.0))
+		state["seats"][seat_index]["hands"][0]["insuranceWager"] = insurance_wager
 
-	var dealer_blackjack: bool = Hand.is_blackjack(state["dealerCards"])
-	if dealer_blackjack:
-		var learner_hand: Dictionary = _find_seat(state["seats"], seat_id)["hands"][0]
-		if learner_hand.has("insuranceWager"):
-			state["balance"] = int(state["balance"]) + int(learner_hand["insuranceWager"]) * 2
-		if Hand.is_blackjack(learner_hand["cards"]):
-			state["balance"] = int(state["balance"]) + int(floor(float(learner_hand["wager"]) * 2.5))
+	if Hand.is_blackjack(state["dealerCards"]):
+		var hand: Dictionary = state["seats"][seat_index]["hands"][0]
+		if hand.has("insuranceWager"):
+			state["balance"] = int(state["balance"]) + int(hand["insuranceWager"]) * 2
+		if Hand.is_blackjack(hand["cards"]):
+			state["balance"] = int(state["balance"]) + int(floor(float(hand["wager"]) * 2.5))
 		else:
-			state["balance"] = int(state["balance"]) - int(learner_hand["wager"])
+			state["balance"] = int(state["balance"]) - int(hand["wager"])
 		state["shoe"] = Shoe.on_hand_settled(state["shoe"], state["tableConfiguration"]["handsBeforeReshuffle"])
 		state["countState"] = Counting.update_count(state["countState"], [state["dealerCards"][1]], state["shoe"]["cards"].size())
 		state["phase"] = "settled"
@@ -140,8 +225,111 @@ static func apply_action(session: Dictionary, seat_id: String, action: String, _
 	return state
 
 
-static func _find_seat(seats: Array, seat_id: String) -> Dictionary:
-	for seat in seats:
-		if seat["id"] == seat_id:
-			return seat
-	return {}
+static func _hit(session: Dictionary, seat_index: int, hand_index: int) -> Dictionary:
+	var state: Dictionary = session
+	var draw_result: Dictionary = Shoe.draw(state["shoe"], 1)
+	state["shoe"] = draw_result["shoe"]
+	var card: Dictionary = draw_result["cards"][0]
+	state["seats"][seat_index]["hands"][hand_index]["cards"].append(card)
+	state["countState"] = Counting.update_count(state["countState"], [card], state["shoe"]["cards"].size())
+	var total: int = int(Hand.hand_value(state["seats"][seat_index]["hands"][hand_index]["cards"])["total"])
+	if total > 21:
+		state["seats"][seat_index]["hands"][hand_index]["status"] = "bust"
+	return state
+
+
+static func _double_down(session: Dictionary, seat_index: int, hand_index: int) -> Dictionary:
+	var state: Dictionary = session
+	var hand: Dictionary = state["seats"][seat_index]["hands"][hand_index]
+	state["balance"] = int(state["balance"]) - int(hand["wager"])
+	hand["wager"] = int(hand["wager"]) * 2
+	hand["doubled"] = true
+	state["seats"][seat_index]["hands"][hand_index] = hand
+	state = _hit(state, seat_index, hand_index)
+	if state["seats"][seat_index]["hands"][hand_index]["status"] == "active":
+		state["seats"][seat_index]["hands"][hand_index]["status"] = "stood"
+	return state
+
+
+static func _split_hand(session: Dictionary, seat_index: int, hand_index: int) -> Dictionary:
+	var state: Dictionary = session
+	var hand: Dictionary = state["seats"][seat_index]["hands"][hand_index]
+	if state["seats"][seat_index]["hands"].size() >= 4:
+		push_error("Max splits reached")
+		return state
+
+	state["balance"] = int(state["balance"]) - int(hand["wager"])
+
+	var hand1 := {
+		"cards": [hand["cards"][0]],
+		"wager": hand["wager"],
+		"status": "active",
+		"isSplit": true,
+		"ownerSeatId": state["seats"][seat_index]["id"],
+	}
+	var hand2 := {
+		"cards": [hand["cards"][1]],
+		"wager": hand["wager"],
+		"status": "active",
+		"isSplit": true,
+		"ownerSeatId": state["seats"][seat_index]["id"],
+	}
+
+	var draw1: Dictionary = Shoe.draw(state["shoe"], 1)
+	state["shoe"] = draw1["shoe"]
+	hand1["cards"].append(draw1["cards"][0])
+	state["countState"] = Counting.update_count(state["countState"], draw1["cards"], state["shoe"]["cards"].size())
+
+	var draw2: Dictionary = Shoe.draw(state["shoe"], 1)
+	state["shoe"] = draw2["shoe"]
+	hand2["cards"].append(draw2["cards"][0])
+	state["countState"] = Counting.update_count(state["countState"], draw2["cards"], state["shoe"]["cards"].size())
+
+	state["seats"][seat_index]["hands"] = [hand1, hand2]
+	state["activeHandIndex"] = 0
+	return state
+
+
+static func _advance_turn(session: Dictionary) -> Dictionary:
+	var state: Dictionary = session
+	if state["phase"] != "player-turn":
+		return state
+	var seat_index: int = _find_seat_index(state["seats"], state["activeSeatId"])
+	if seat_index == -1:
+		state["phase"] = "dealer-turn"
+		return state
+	var hand_index: int = int(state["activeHandIndex"])
+	var hand: Dictionary = state["seats"][seat_index]["hands"][hand_index]
+	if hand["status"] == "active":
+		return state
+	if hand_index < state["seats"][seat_index]["hands"].size() - 1:
+		state["activeHandIndex"] = hand_index + 1
+	else:
+		state["phase"] = "dealer-turn"
+	return state
+
+
+static func _play_dealer(session: Dictionary) -> Dictionary:
+	var state: Dictionary = session
+	state["dealerHoleHidden"] = false
+	if state["dealerCards"].size() > 1:
+		state["countState"] = Counting.update_count(state["countState"], [state["dealerCards"][1]], state["shoe"]["cards"].size())
+	var dealer_value: Dictionary = Hand.hand_value(state["dealerCards"])
+	var total: int = int(dealer_value["total"])
+	var soft: bool = bool(dealer_value["soft"])
+	while total < 17 or (total == 17 and soft):
+		var draw_result: Dictionary = Shoe.draw(state["shoe"], 1)
+		state["shoe"] = draw_result["shoe"]
+		state["dealerCards"].append(draw_result["cards"][0])
+		state["countState"] = Counting.update_count(state["countState"], draw_result["cards"], state["shoe"]["cards"].size())
+		dealer_value = Hand.hand_value(state["dealerCards"])
+		total = int(dealer_value["total"])
+		soft = bool(dealer_value["soft"])
+	return state
+
+
+static func _find_seat_index(seats: Array, seat_id: String) -> int:
+	for i in seats.size():
+		if seats[i]["id"] == seat_id:
+			return i
+	return -1
