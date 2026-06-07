@@ -1,0 +1,56 @@
+[gd_scene load_steps=6 format=3 uid="uid://dbn3s8v4u6oo4"]
+
+[ext_resource type="Script" path="res://scripts/scenes/table_3d.gd" id="1_table_3d_script"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.03, 0.04, 0.06, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_1"]
+size = Vector2(4.5, 3.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(0.35, 0.2, 0.55)
+
+[node name="Table3D" type="SubViewportContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+script = ExtResource("1_table_3d_script")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+size = Vector2i(1280, 720)
+transparent_bg = true
+render_target_update_mode = 4
+
+[node name="World" type="Node3D" parent="SubViewport"]
+
+[node name="Camera3D" type="Camera3D" parent="SubViewport/World"]
+position = Vector3(0, 3.1, 3.2)
+rotation = Vector3(-0.75, 0, 0)
+
+[node name="Sun" type="DirectionalLight3D" parent="SubViewport/World"]
+position = Vector3(0, 3, 0)
+rotation = Vector3(-0.8, 0.5, 0)
+light_energy = 1.4
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewport/World"]
+environment = SubResource("Environment_1")
+
+[node name="TableMesh" type="MeshInstance3D" parent="SubViewport/World"]
+unique_name_in_owner = true
+mesh = SubResource("PlaneMesh_1")
+
+[node name="ShoeMesh" type="MeshInstance3D" parent="SubViewport/World"]
+unique_name_in_owner = true
+position = Vector3(1.65, 0.1, -0.95)
+mesh = SubResource("BoxMesh_1")
+
+[node name="SeatRoot" type="Node3D" parent="SubViewport/World"]
+unique_name_in_owner = true
+
+[node name="CardRoot" type="Node3D" parent="SubViewport/World"]
+unique_name_in_owner = true

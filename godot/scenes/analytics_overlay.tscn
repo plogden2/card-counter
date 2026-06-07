@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://d6q4q3f7p7j5m"]
+
+[ext_resource type="Script" path="res://scripts/scenes/analytics_overlay.gd" id="1_overlay"]
+
+[node name="AnalyticsOverlay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+visible = false
+script = ExtResource("1_overlay")

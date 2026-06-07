@@ -1,0 +1,11 @@
+[gd_resource type="Theme" format=3 uid="uid://bd4m2m3ythfpo"]
+
+[resource]
+default_font_size = 18
+Button/colors/font_color = Color(0.95, 0.95, 0.95, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/constants/h_separation = 8
+Button/constants/v_separation = 6
+Button/font_sizes/font_size = 20
+Label/colors/font_color = Color(0.95, 0.95, 0.95, 1)
+Label/font_sizes/font_size = 18
