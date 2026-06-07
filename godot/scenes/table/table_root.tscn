@@ -28,17 +28,20 @@ theme_override_constants/margin_bottom = 16
 [node name="MainSplit" type="BoxContainer" parent="Padding"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 16
 
 [node name="SidebarContainer" type="PanelContainer" parent="Padding/MainSplit"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_vertical = 1
 
 [node name="Sidebar" parent="Padding/MainSplit/SidebarContainer" instance=ExtResource("2_sidebar")]
 unique_name_in_owner = true
 
 [node name="TableArea" type="PanelContainer" parent="Padding/MainSplit"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3

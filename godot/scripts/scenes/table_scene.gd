@@ -7,6 +7,7 @@ const SIDEBAR_SCENE = preload("res://scenes/table/sidebar.tscn")
 @onready var _sidebar: VBoxContainer = %Sidebar
 @onready var _main_split: BoxContainer = %MainSplit
 @onready var _table_3d: SubViewportContainer = %Viewport3D
+@onready var _table_area: Control = %TableArea
 @onready var _felt_label: Label = %FeltLabel
 @onready var _dealer_label: Label = %DealerCards
 @onready var _player_label: Label = %PlayerCards
@@ -244,8 +245,12 @@ func _apply_layout_for_width(width: float) -> void:
 	if width < 900.0:
 		if _current_layout != "stacked":
 			_main_split.vertical = true
+			_sidebar_container.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+			_table_area.size_flags_vertical = Control.SIZE_EXPAND_FILL
 			_current_layout = "stacked"
 	else:
 		if _current_layout != "wide":
 			_main_split.vertical = false
+			_sidebar_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+			_table_area.size_flags_vertical = Control.SIZE_EXPAND_FILL
 			_current_layout = "wide"
